@@ -47,20 +47,6 @@ jobs:
           npm run generate-client
           npm run test
 
-      - name: Build service
-        run: |
-          go build -o omnibasement ./src/main.go
-
-      - name: Show service logs
-        if: always()
-        run: |
-          docker compose logs
-
-      - name: Stop services
-        if: always()
-        run: |
-          docker compose down
-
       - name: Commit and push generated files
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
