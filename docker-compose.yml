@@ -26,13 +26,7 @@ services:
       ARANGO_DB: test_db
       ARANGO_USERNAME: root
       ARANGO_PASSWORD: "0123"
-      KEYCLOAK_URL: http://omni_keycloak:8080
-      KEYCLOAK_REALM: omni
       KEYCLOAK_CLIENT_ID: omndapi
-      KEYCLOAK_CLIENT_SECRET: omndapi-secret
-    networks:
-      - default
-      - omniauth_net
     depends_on:
       arangodb:
         condition: service_healthy
@@ -41,10 +35,3 @@ services:
       interval: 6s
       timeout: 5s
       retries: 3
-
-networks:
-  default:
-    name: omndapi_net
-  omniauth_net:
-    external: true
-    name: omniauth_net
