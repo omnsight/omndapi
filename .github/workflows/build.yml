@@ -41,9 +41,16 @@ jobs:
         run: |
           docker compose up -d --wait
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
       - name: Run tests
         run: |
           cd test
+          npm install
           npm run generate-client
           npm run test
 
