@@ -1,0 +1,9 @@
+# Ignore all test files
+**/*_test.go
+
+# Ignore test data if any
+testdata/
+test/
+
+# Ignore documentation
+README.md

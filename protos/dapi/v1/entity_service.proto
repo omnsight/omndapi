@@ -1,0 +1,106 @@
+syntax = "proto3";
+
+package dapi.v1;
+
+import "google/api/annotations.proto";
+import "model/v1/osint.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+option go_package = "github.com/omnsight/omndapi/gen/dapi/v1;dapi";
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+  info: {
+    title: "Data API"
+    version: "1.0.0"
+    description: "The OSINT data API handles data for OSINT operations."
+    contact: {
+      name: "Omni Team"
+      url: ""
+      email: ""
+    }
+    license: {
+      name: "Apache 2.0"
+      url: "https://www.apache.org/licenses/LICENSE-2.0.html"
+    }
+  }
+  // You can also set other top-level fields like schemes, host, etc.
+  schemes: [HTTPS]
+  consumes: "application/json"
+  produces: "application/json"
+};
+
+service EntityService {
+  rpc ListEntitiesFromEvent(ListEntitiesFromEventRequest) returns (ListEntitiesFromEventResponse) {
+    option (google.api.http) = {get: "/v1/entities/event"};
+  }
+
+  rpc GetEntity(GetEntityRequest) returns (GetEntityResponse) {
+    option (google.api.http) = {get: "/v1/entities/{entity_type}/{key}"};
+  }
+
+  rpc CreateEntity(CreateEntityRequest) returns (CreateEntityResponse) {
+    option (google.api.http) = {
+      post: "/v1/entities/{entity_type}"
+      body: "entity"
+    };
+  }
+
+  rpc UpdateEntity(UpdateEntityRequest) returns (UpdateEntityResponse) {
+    option (google.api.http) = {
+      put: "/v1/entities/{entity_type}/{key}"
+      body: "entity"
+    };
+  }
+
+  rpc DeleteEntity(DeleteEntityRequest) returns (DeleteEntityResponse) {
+    option (google.api.http) = {delete: "/v1/entities/{entity_type}/{key}"};
+  }
+}
+
+message ListEntitiesFromEventRequest {
+  string start_node = 1;
+  int64 start_time = 2;
+  int64 end_time = 3;
+  string country_code = 4;
+  string tag = 5;
+  int32 depth = 6;
+}
+
+message ListEntitiesFromEventResponse {
+  repeated model.v1.Entity entities = 1;
+  repeated model.v1.Relation relations = 2;
+}
+
+message GetEntityRequest {
+  string entity_type = 1;
+  string key = 2;
+}
+
+message GetEntityResponse {
+  model.v1.Entity entity = 1;
+}
+
+message CreateEntityRequest {
+  string entity_type = 1;
+  model.v1.Entity entity = 2;
+}
+
+message CreateEntityResponse {
+  model.v1.Entity entity = 1;
+}
+
+message UpdateEntityRequest {
+  string entity_type = 1;
+  string key = 2;
+  model.v1.Entity entity = 3;
+}
+
+message UpdateEntityResponse {
+  model.v1.Entity entity = 1;
+}
+
+message DeleteEntityRequest {
+  string entity_type = 1;
+  string key = 2;
+}
+
+message DeleteEntityResponse {}

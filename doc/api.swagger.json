@@ -1,0 +1,852 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Data API",
+    "description": "The OSINT data API handles data for OSINT operations.",
+    "version": "1.0.0",
+    "contact": {
+      "name": "Omni Team"
+    },
+    "license": {
+      "name": "Apache 2.0",
+      "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
+    }
+  },
+  "tags": [
+    {
+      "name": "EntityService"
+    },
+    {
+      "name": "RelationshipService"
+    }
+  ],
+  "schemes": [
+    "https"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/v1/entities/event": {
+      "get": {
+        "operationId": "EntityService_ListEntitiesFromEvent",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ListEntitiesFromEventResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "startNode",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "startTime",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "endTime",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "countryCode",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "tag",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "depth",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "EntityService"
+        ]
+      }
+    },
+    "/v1/entities/{entityType}": {
+      "post": {
+        "operationId": "EntityService_CreateEntity",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1CreateEntityResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "entityType",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "entity",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1Entity"
+            }
+          }
+        ],
+        "tags": [
+          "EntityService"
+        ]
+      }
+    },
+    "/v1/entities/{entityType}/{key}": {
+      "get": {
+        "operationId": "EntityService_GetEntity",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetEntityResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "entityType",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "key",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "EntityService"
+        ]
+      },
+      "delete": {
+        "operationId": "EntityService_DeleteEntity",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1DeleteEntityResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "entityType",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "key",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "EntityService"
+        ]
+      },
+      "put": {
+        "operationId": "EntityService_UpdateEntity",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1UpdateEntityResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "entityType",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "key",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "entity",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1Entity"
+            }
+          }
+        ],
+        "tags": [
+          "EntityService"
+        ]
+      }
+    },
+    "/v1/relationships": {
+      "post": {
+        "operationId": "RelationshipService_CreateRelationship",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1CreateRelationshipResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "relationship",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1Relation"
+            }
+          }
+        ],
+        "tags": [
+          "RelationshipService"
+        ]
+      }
+    },
+    "/v1/relationships/{collection}/{key}": {
+      "delete": {
+        "operationId": "RelationshipService_DeleteRelationship",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1DeleteRelationshipResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "collection",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "key",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "RelationshipService"
+        ]
+      },
+      "put": {
+        "operationId": "RelationshipService_UpdateRelationship",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1UpdateRelationshipResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "collection",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "key",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "relationship",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1Relation"
+            }
+          }
+        ],
+        "tags": [
+          "RelationshipService"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "protobufNullValue": {
+      "type": "string",
+      "enum": [
+        "NULL_VALUE"
+      ],
+      "default": "NULL_VALUE",
+      "description": "`NullValue` is a singleton enumeration to represent the null value for the\n`Value` type union.\n\nThe JSON representation for `NullValue` is JSON `null`.\n\n - NULL_VALUE: Null value."
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    },
+    "v1CreateEntityResponse": {
+      "type": "object",
+      "properties": {
+        "entity": {
+          "$ref": "#/definitions/v1Entity"
+        }
+      }
+    },
+    "v1CreateRelationshipResponse": {
+      "type": "object",
+      "properties": {
+        "relationship": {
+          "$ref": "#/definitions/v1Relation"
+        }
+      }
+    },
+    "v1DeleteEntityResponse": {
+      "type": "object"
+    },
+    "v1DeleteRelationshipResponse": {
+      "type": "object"
+    },
+    "v1Entity": {
+      "type": "object",
+      "properties": {
+        "source": {
+          "$ref": "#/definitions/v1Source"
+        },
+        "person": {
+          "$ref": "#/definitions/v1Person"
+        },
+        "organization": {
+          "$ref": "#/definitions/v1Organization"
+        },
+        "website": {
+          "$ref": "#/definitions/v1Website"
+        },
+        "event": {
+          "$ref": "#/definitions/v1Event"
+        }
+      }
+    },
+    "v1Event": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "title": "Common data\n@gotags: json:\"_id,omitempty\""
+        },
+        "key": {
+          "type": "string",
+          "title": "@gotags: json:\"_key,omitempty\""
+        },
+        "rev": {
+          "type": "string",
+          "title": "@gotags: json:\"_rev,omitempty\""
+        },
+        "roles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "location": {
+          "$ref": "#/definitions/v1LocationData",
+          "title": "Main Data"
+        },
+        "title": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "happenedAt": {
+          "type": "string",
+          "format": "int64",
+          "title": "Time data"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "int64"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "title": "Additional"
+        },
+        "attributes": {
+          "type": "object"
+        }
+      }
+    },
+    "v1GetEntityResponse": {
+      "type": "object",
+      "properties": {
+        "entity": {
+          "$ref": "#/definitions/v1Entity"
+        }
+      }
+    },
+    "v1ListEntitiesFromEventResponse": {
+      "type": "object",
+      "properties": {
+        "entities": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1Entity"
+          }
+        },
+        "relations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1Relation"
+          }
+        }
+      }
+    },
+    "v1LocationData": {
+      "type": "object",
+      "properties": {
+        "latitude": {
+          "type": "number",
+          "format": "float"
+        },
+        "longitude": {
+          "type": "number",
+          "format": "float"
+        },
+        "countryCode": {
+          "type": "string"
+        },
+        "administrativeArea": {
+          "type": "string"
+        },
+        "subAdministrativeArea": {
+          "type": "string"
+        },
+        "locality": {
+          "type": "string"
+        },
+        "subLocality": {
+          "type": "string"
+        },
+        "address": {
+          "type": "string"
+        },
+        "postalCode": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "v1Organization": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "title": "Common data\n@gotags: json:\"_id,omitempty\""
+        },
+        "key": {
+          "type": "string",
+          "title": "@gotags: json:\"_key,omitempty\""
+        },
+        "rev": {
+          "type": "string",
+          "title": "@gotags: json:\"_rev,omitempty\""
+        },
+        "roles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "name": {
+          "type": "string",
+          "title": "Main Data"
+        },
+        "type": {
+          "type": "string"
+        },
+        "foundedAt": {
+          "type": "string",
+          "format": "int64",
+          "title": "Time data"
+        },
+        "discoveredAt": {
+          "type": "string",
+          "format": "int64"
+        },
+        "lastVisited": {
+          "type": "string",
+          "format": "int64"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "title": "Additional"
+        },
+        "attributes": {
+          "type": "object"
+        }
+      }
+    },
+    "v1Person": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "title": "Common data\n@gotags: json:\"_id,omitempty\""
+        },
+        "key": {
+          "type": "string",
+          "title": "@gotags: json:\"_key,omitempty\""
+        },
+        "rev": {
+          "type": "string",
+          "title": "@gotags: json:\"_rev,omitempty\""
+        },
+        "roles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "name": {
+          "type": "string",
+          "title": "Main Data"
+        },
+        "role": {
+          "type": "string"
+        },
+        "nationality": {
+          "type": "string"
+        },
+        "birthDate": {
+          "type": "string",
+          "format": "int64",
+          "title": "Time data"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "int64"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "title": "Additional"
+        },
+        "aliases": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "attributes": {
+          "type": "object"
+        }
+      }
+    },
+    "v1Relation": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "title": "Common data\n@gotags: json:\"_id,omitempty\""
+        },
+        "key": {
+          "type": "string",
+          "title": "@gotags: json:\"_key,omitempty\""
+        },
+        "from": {
+          "type": "string",
+          "title": "@gotags: json:\"_from,omitempty\""
+        },
+        "to": {
+          "type": "string",
+          "title": "@gotags: json:\"_to,omitempty\""
+        },
+        "rev": {
+          "type": "string",
+          "title": "@gotags: json:\"_rev,omitempty\""
+        },
+        "roles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "name": {
+          "type": "string",
+          "title": "Main Data"
+        },
+        "confidence": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "int64",
+          "title": "Time Data"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "int64"
+        },
+        "attributes": {
+          "type": "object",
+          "title": "Additional Data"
+        }
+      }
+    },
+    "v1Source": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "title": "Common data\n@gotags: json:\"_id,omitempty\""
+        },
+        "key": {
+          "type": "string",
+          "title": "@gotags: json:\"_key,omitempty\""
+        },
+        "rev": {
+          "type": "string",
+          "title": "@gotags: json:\"_rev,omitempty\""
+        },
+        "roles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "name": {
+          "type": "string",
+          "title": "Main Data"
+        },
+        "url": {
+          "type": "string"
+        },
+        "rootUrl": {
+          "type": "string"
+        },
+        "reliability": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "monitoring": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "title": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "int64",
+          "title": "Time data"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "int64"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "title": "Additional"
+        },
+        "attributes": {
+          "type": "object"
+        }
+      }
+    },
+    "v1UpdateEntityResponse": {
+      "type": "object",
+      "properties": {
+        "entity": {
+          "$ref": "#/definitions/v1Entity"
+        }
+      }
+    },
+    "v1UpdateRelationshipResponse": {
+      "type": "object",
+      "properties": {
+        "relationship": {
+          "$ref": "#/definitions/v1Relation"
+        }
+      }
+    },
+    "v1Website": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "title": "Common data\n@gotags: json:\"_id,omitempty\""
+        },
+        "key": {
+          "type": "string",
+          "title": "@gotags: json:\"_key,omitempty\""
+        },
+        "rev": {
+          "type": "string",
+          "title": "@gotags: json:\"_rev,omitempty\""
+        },
+        "roles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "url": {
+          "type": "string",
+          "title": "Main Data"
+        },
+        "domain": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "foundedAt": {
+          "type": "string",
+          "format": "int64",
+          "title": "Time data"
+        },
+        "discoveredAt": {
+          "type": "string",
+          "format": "int64"
+        },
+        "lastVisited": {
+          "type": "string",
+          "format": "int64"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "title": "Additional"
+        },
+        "attributes": {
+          "type": "object"
+        }
+      }
+    }
+  }
+}

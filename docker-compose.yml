@@ -1,0 +1,50 @@
+services:
+  arangodb:
+    image: arangodb/arangodb:3.10
+    container_name: test_arangodb
+    environment:
+      ARANGO_ROOT_PASSWORD: "0123"
+    ports:
+      - "8529:8529"
+    # Removed volumes for testing to ensure clean state
+    healthcheck:
+      test: "arangosh --server.endpoint http://localhost:8529 --server.username root --server.password $$ARANGO_ROOT_PASSWORD --javascript.execute-string \"db._version();\""
+      interval: 6s
+      timeout: 5s
+      retries: 3
+
+  omndapi:
+    build: .
+    container_name: omndapi_service
+    ports:
+      - "8081:8080"
+      - "9091:9090"
+    environment:
+      GRPC_PORT: 9090
+      SERVER_PORT: 8080
+      ARANGO_URL: http://arangodb:8529
+      ARANGO_DB: test_db
+      ARANGO_USERNAME: root
+      ARANGO_PASSWORD: "0123"
+      KEYCLOAK_URL: http://omni_keycloak:8080
+      KEYCLOAK_REALM: omni
+      KEYCLOAK_CLIENT_ID: omndapi
+      KEYCLOAK_CLIENT_SECRET: omndapi-secret
+    networks:
+      - default
+      - omniauth_net
+    depends_on:
+      arangodb:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:8080/health || exit 1"]
+      interval: 6s
+      timeout: 5s
+      retries: 3
+
+networks:
+  default:
+    name: omndapi_net
+  omniauth_net:
+    external: true
+    name: omniauth_net
