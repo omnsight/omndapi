@@ -2,8 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
-	"sync"
 
 	"github.com/arangodb/go-driver"
 	"github.com/omnsight/omndapi/gen/dapi/v1"
@@ -17,16 +15,48 @@ import (
 type EntityService struct {
 	dapi.UnimplementedEntityServiceServer
 
-	DBClient    *utils.ArangoDBClient
-	Collections map[string]driver.Collection
-	mu          sync.RWMutex
+	DBClient *utils.ArangoDBClient
+
+	EventHandler        *handlers.EventHandler
+	SourceHandler       *handlers.SourceHandler
+	WebsiteHandler      *handlers.WebsiteHandler
+	PersonHandler       *handlers.PersonHandler
+	OrganizationHandler *handlers.OrganizationHandler
 }
 
 func NewEntityService(client *utils.ArangoDBClient) (*EntityService, error) {
 	service := &EntityService{
-		DBClient:    client,
-		Collections: make(map[string]driver.Collection),
+		DBClient: client,
 	}
+
+	var err error
+
+	// Initialize handlers
+	service.EventHandler, err = handlers.NewEventHandler(client)
+	if err != nil {
+		return nil, err
+	}
+
+	service.SourceHandler, err = handlers.NewSourceHandler(client)
+	if err != nil {
+		return nil, err
+	}
+
+	service.WebsiteHandler, err = handlers.NewWebsiteHandler(client)
+	if err != nil {
+		return nil, err
+	}
+
+	service.PersonHandler, err = handlers.NewPersonHandler(client)
+	if err != nil {
+		return nil, err
+	}
+
+	service.OrganizationHandler, err = handlers.NewOrganizationHandler(client)
+	if err != nil {
+		return nil, err
+	}
+
 	return service, nil
 }
 
@@ -134,137 +164,69 @@ func (s *EntityService) ListEntitiesFromEvent(ctx context.Context, req *dapi.Lis
 }
 
 func (s *EntityService) GetEntity(ctx context.Context, req *dapi.GetEntityRequest) (*dapi.GetEntityResponse, error) {
-	collection, err := s.getCollection(ctx, req.GetEntityType())
-	if err != nil {
-		utils.GetLogger(ctx).WithFields(logrus.Fields{
-			"entity_type": req.GetEntityType(),
-			"error":       err,
-		}).Error("failed to get collection")
-		return nil, status.Errorf(codes.Internal, "Internal service error. Please try again later.")
-	}
-
 	switch req.GetEntityType() {
 	case "event":
-		return handlers.GetEvent(ctx, collection, req)
+		return s.EventHandler.GetEvent(ctx, req)
 	case "source":
-		return handlers.GetSource(ctx, collection, req)
+		return s.SourceHandler.GetSource(ctx, req)
 	case "website":
-		return handlers.GetWebsite(ctx, collection, req)
+		return s.WebsiteHandler.GetWebsite(ctx, req)
 	case "person":
-		return handlers.GetPerson(ctx, collection, req)
+		return s.PersonHandler.GetPerson(ctx, req)
 	case "organization":
-		return handlers.GetOrganization(ctx, collection, req)
+		return s.OrganizationHandler.GetOrganization(ctx, req)
 	default:
 		return nil, status.Errorf(codes.InvalidArgument, "unknown entity type: %s", req.GetEntityType())
 	}
 }
 
 func (s *EntityService) CreateEntity(ctx context.Context, req *dapi.CreateEntityRequest) (*dapi.CreateEntityResponse, error) {
-	collection, err := s.getCollection(ctx, req.GetEntityType())
-	if err != nil {
-		utils.GetLogger(ctx).WithFields(logrus.Fields{
-			"entity_type": req.GetEntityType(),
-			"error":       err,
-		}).Error("failed to get collection")
-		return nil, status.Errorf(codes.Internal, "Internal service error. Please try again later.")
-	}
-
 	switch req.GetEntityType() {
 	case "event":
-		return handlers.CreateEvent(ctx, collection, req)
+		return s.EventHandler.CreateEvent(ctx, req)
 	case "source":
-		return handlers.CreateSource(ctx, collection, req)
+		return s.SourceHandler.CreateSource(ctx, req)
 	case "website":
-		return handlers.CreateWebsite(ctx, collection, req)
+		return s.WebsiteHandler.CreateWebsite(ctx, req)
 	case "person":
-		return handlers.CreatePerson(ctx, collection, req)
+		return s.PersonHandler.CreatePerson(ctx, req)
 	case "organization":
-		return handlers.CreateOrganization(ctx, collection, req)
+		return s.OrganizationHandler.CreateOrganization(ctx, req)
 	default:
 		return nil, status.Errorf(codes.InvalidArgument, "unknown entity type: %s", req.GetEntityType())
 	}
 }
 
 func (s *EntityService) UpdateEntity(ctx context.Context, req *dapi.UpdateEntityRequest) (*dapi.UpdateEntityResponse, error) {
-	collection, err := s.getCollection(ctx, req.GetEntityType())
-	if err != nil {
-		utils.GetLogger(ctx).WithFields(logrus.Fields{
-			"entity_type": req.GetEntityType(),
-			"error":       err,
-		}).Error("failed to get collection")
-		return nil, status.Errorf(codes.Internal, "Internal service error. Please try again later.")
-	}
-
 	switch req.GetEntityType() {
 	case "event":
-		return handlers.UpdateEvent(ctx, collection, req)
+		return s.EventHandler.UpdateEvent(ctx, req)
 	case "source":
-		return handlers.UpdateSource(ctx, collection, req)
+		return s.SourceHandler.UpdateSource(ctx, req)
 	case "website":
-		return handlers.UpdateWebsite(ctx, collection, req)
+		return s.WebsiteHandler.UpdateWebsite(ctx, req)
 	case "person":
-		return handlers.UpdatePerson(ctx, collection, req)
+		return s.PersonHandler.UpdatePerson(ctx, req)
 	case "organization":
-		return handlers.UpdateOrganization(ctx, collection, req)
+		return s.OrganizationHandler.UpdateOrganization(ctx, req)
 	default:
 		return nil, status.Errorf(codes.InvalidArgument, "unknown entity type: %s", req.GetEntityType())
 	}
 }
 
 func (s *EntityService) DeleteEntity(ctx context.Context, req *dapi.DeleteEntityRequest) (*dapi.DeleteEntityResponse, error) {
-	collection, err := s.getCollection(ctx, req.GetEntityType())
-	if err != nil {
-		utils.GetLogger(ctx).WithFields(logrus.Fields{
-			"entity_type": req.GetEntityType(),
-			"error":       err,
-		}).Error("failed to get collection")
-		return nil, status.Errorf(codes.Internal, "Internal service error. Please try again later.")
-	}
-
 	switch req.GetEntityType() {
 	case "event":
-		return handlers.DeleteEvent(ctx, collection, req)
+		return s.EventHandler.DeleteEvent(ctx, req)
 	case "source":
-		return handlers.DeleteSource(ctx, collection, req)
+		return s.SourceHandler.DeleteSource(ctx, req)
 	case "website":
-		return handlers.DeleteWebsite(ctx, collection, req)
+		return s.WebsiteHandler.DeleteWebsite(ctx, req)
 	case "person":
-		return handlers.DeletePerson(ctx, collection, req)
+		return s.PersonHandler.DeletePerson(ctx, req)
 	case "organization":
-		return handlers.DeleteOrganization(ctx, collection, req)
+		return s.OrganizationHandler.DeleteOrganization(ctx, req)
 	default:
 		return nil, status.Errorf(codes.InvalidArgument, "unknown entity type: %s", req.GetEntityType())
 	}
-}
-
-func (s *EntityService) getCollection(ctx context.Context, name string) (driver.Collection, error) {
-	s.mu.RLock()
-	if col, ok := s.Collections[name]; ok {
-		s.mu.RUnlock()
-		return col, nil
-	}
-	s.mu.RUnlock()
-
-	s.mu.Lock()
-	defer s.mu.Unlock()
-
-	// Double check
-	if col, ok := s.Collections[name]; ok {
-		return col, nil
-	}
-
-	collection, err := s.DBClient.GetCreateCollection(ctx, name, driver.CreateVertexCollectionOptions{})
-	if err != nil {
-		return nil, fmt.Errorf("failed to get or create %s collection: %v", name, err)
-	}
-	logrus.Infof("✅ Initialized collection %s", collection.Name())
-
-	if name == "event" {
-		collection.EnsurePersistentIndex(ctx, []string{"happened_at"}, &driver.EnsurePersistentIndexOptions{
-			InBackground: true,
-		})
-	}
-
-	s.Collections[name] = collection
-	return collection, nil
 }

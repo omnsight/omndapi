@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"context"
+	"fmt"
 	"slices"
 
 	"github.com/arangodb/go-driver"
@@ -13,7 +14,22 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func GetPerson(ctx context.Context, col driver.Collection, req *dapi.GetEntityRequest) (*dapi.GetEntityResponse, error) {
+type PersonHandler struct {
+	col driver.Collection
+}
+
+func NewPersonHandler(client *utils.ArangoDBClient) (*PersonHandler, error) {
+	ctx := context.Background()
+	col, err := client.GetCreateCollection(ctx, "person", driver.CreateVertexCollectionOptions{})
+	if err != nil {
+		return nil, fmt.Errorf("failed to get or create person collection: %v", err)
+	}
+	logrus.Infof("✅ Initialized collection %s", col.Name())
+
+	return &PersonHandler{col: col}, nil
+}
+
+func (h *PersonHandler) GetPerson(ctx context.Context, req *dapi.GetEntityRequest) (*dapi.GetEntityResponse, error) {
 	userId, userRoles, err := utils.GetUser(ctx)
 	if err != nil {
 		return nil, err
@@ -23,7 +39,7 @@ func GetPerson(ctx context.Context, col driver.Collection, req *dapi.GetEntityRe
 	logger.Infof("[%s, %v] requests to get person with ID: %s", userId, userRoles, req.GetKey())
 
 	person := &model.Person{}
-	meta, err := col.ReadDocument(ctx, req.GetKey(), person)
+	meta, err := h.col.ReadDocument(ctx, req.GetKey(), person)
 	if err != nil {
 		if driver.IsNotFoundGeneral(err) {
 			return nil, status.Errorf(codes.NotFound, "entity not found")
@@ -54,7 +70,7 @@ func GetPerson(ctx context.Context, col driver.Collection, req *dapi.GetEntityRe
 	}, nil
 }
 
-func CreatePerson(ctx context.Context, col driver.Collection, req *dapi.CreateEntityRequest) (*dapi.CreateEntityResponse, error) {
+func (h *PersonHandler) CreatePerson(ctx context.Context, req *dapi.CreateEntityRequest) (*dapi.CreateEntityResponse, error) {
 	userId, userRoles, err := utils.GetUser(ctx)
 	if err != nil {
 		return nil, err
@@ -79,7 +95,7 @@ func CreatePerson(ctx context.Context, col driver.Collection, req *dapi.CreateEn
 
 	createdPerson := &model.Person{}
 	ctxWithReturnNew := driver.WithReturnNew(ctx, createdPerson)
-	meta, err := col.CreateDocument(ctxWithReturnNew, person)
+	meta, err := h.col.CreateDocument(ctxWithReturnNew, person)
 	if err != nil {
 		logger.WithFields(logrus.Fields{
 			"entity_type": "person",
@@ -97,7 +113,7 @@ func CreatePerson(ctx context.Context, col driver.Collection, req *dapi.CreateEn
 	}, nil
 }
 
-func UpdatePerson(ctx context.Context, col driver.Collection, req *dapi.UpdateEntityRequest) (*dapi.UpdateEntityResponse, error) {
+func (h *PersonHandler) UpdatePerson(ctx context.Context, req *dapi.UpdateEntityRequest) (*dapi.UpdateEntityResponse, error) {
 	userId, userRoles, err := utils.GetUser(ctx)
 	if err != nil {
 		return nil, err
@@ -112,7 +128,7 @@ func UpdatePerson(ctx context.Context, col driver.Collection, req *dapi.UpdateEn
 	}
 
 	existingPerson := &model.Person{}
-	_, err = col.ReadDocument(ctx, req.GetKey(), existingPerson)
+	_, err = h.col.ReadDocument(ctx, req.GetKey(), existingPerson)
 	if err != nil {
 		if driver.IsNotFoundGeneral(err) {
 			return nil, status.Errorf(codes.NotFound, "entity not found")
@@ -141,7 +157,7 @@ func UpdatePerson(ctx context.Context, col driver.Collection, req *dapi.UpdateEn
 
 	updatedPerson := &model.Person{}
 	ctxWithReturnNew := driver.WithReturnNew(ctx, updatedPerson)
-	meta, err := col.UpdateDocument(ctxWithReturnNew, req.GetKey(), person)
+	meta, err := h.col.UpdateDocument(ctxWithReturnNew, req.GetKey(), person)
 	if err != nil {
 		logger.WithFields(logrus.Fields{
 			"entity_type": "person",
@@ -160,7 +176,7 @@ func UpdatePerson(ctx context.Context, col driver.Collection, req *dapi.UpdateEn
 	}, nil
 }
 
-func DeletePerson(ctx context.Context, col driver.Collection, req *dapi.DeleteEntityRequest) (*dapi.DeleteEntityResponse, error) {
+func (h *PersonHandler) DeletePerson(ctx context.Context, req *dapi.DeleteEntityRequest) (*dapi.DeleteEntityResponse, error) {
 	userId, _, err := utils.GetUser(ctx)
 	if err != nil {
 		return nil, err
@@ -170,7 +186,7 @@ func DeletePerson(ctx context.Context, col driver.Collection, req *dapi.DeleteEn
 	logger.Infof("[%s] requests to delete person with ID: %s", userId, req.GetKey())
 
 	existingPerson := &model.Person{}
-	_, err = col.ReadDocument(ctx, req.GetKey(), existingPerson)
+	_, err = h.col.ReadDocument(ctx, req.GetKey(), existingPerson)
 	if err != nil {
 		if driver.IsNotFoundGeneral(err) {
 			return nil, status.Errorf(codes.NotFound, "entity not found")
@@ -191,7 +207,7 @@ func DeletePerson(ctx context.Context, col driver.Collection, req *dapi.DeleteEn
 		return nil, status.Errorf(codes.PermissionDenied, "Access denied: only owner can delete entity")
 	}
 
-	_, err = col.RemoveDocument(ctx, req.GetKey())
+	_, err = h.col.RemoveDocument(ctx, req.GetKey())
 	if err != nil {
 		logger.WithFields(logrus.Fields{
 			"entity_type": "person",

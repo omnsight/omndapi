@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"context"
+	"fmt"
 	"slices"
 
 	"github.com/arangodb/go-driver"
@@ -13,7 +14,22 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func GetSource(ctx context.Context, col driver.Collection, req *dapi.GetEntityRequest) (*dapi.GetEntityResponse, error) {
+type SourceHandler struct {
+	col driver.Collection
+}
+
+func NewSourceHandler(client *utils.ArangoDBClient) (*SourceHandler, error) {
+	ctx := context.Background()
+	col, err := client.GetCreateCollection(ctx, "source", driver.CreateVertexCollectionOptions{})
+	if err != nil {
+		return nil, fmt.Errorf("failed to get or create source collection: %v", err)
+	}
+	logrus.Infof("✅ Initialized collection %s", col.Name())
+
+	return &SourceHandler{col: col}, nil
+}
+
+func (h *SourceHandler) GetSource(ctx context.Context, req *dapi.GetEntityRequest) (*dapi.GetEntityResponse, error) {
 	userId, userRoles, err := utils.GetUser(ctx)
 	if err != nil {
 		return nil, err
@@ -23,7 +39,7 @@ func GetSource(ctx context.Context, col driver.Collection, req *dapi.GetEntityRe
 	logger.Infof("[%s, %v] requests to get source with ID: %s", userId, userRoles, req.GetKey())
 
 	source := &model.Source{}
-	meta, err := col.ReadDocument(ctx, req.GetKey(), source)
+	meta, err := h.col.ReadDocument(ctx, req.GetKey(), source)
 	if err != nil {
 		if driver.IsNotFoundGeneral(err) {
 			return nil, status.Errorf(codes.NotFound, "entity not found")
@@ -54,7 +70,7 @@ func GetSource(ctx context.Context, col driver.Collection, req *dapi.GetEntityRe
 	}, nil
 }
 
-func CreateSource(ctx context.Context, col driver.Collection, req *dapi.CreateEntityRequest) (*dapi.CreateEntityResponse, error) {
+func (h *SourceHandler) CreateSource(ctx context.Context, req *dapi.CreateEntityRequest) (*dapi.CreateEntityResponse, error) {
 	userId, userRoles, err := utils.GetUser(ctx)
 	if err != nil {
 		return nil, err
@@ -79,7 +95,7 @@ func CreateSource(ctx context.Context, col driver.Collection, req *dapi.CreateEn
 
 	createdSource := &model.Source{}
 	ctxWithReturnNew := driver.WithReturnNew(ctx, createdSource)
-	meta, err := col.CreateDocument(ctxWithReturnNew, source)
+	meta, err := h.col.CreateDocument(ctxWithReturnNew, source)
 	if err != nil {
 		logger.WithFields(logrus.Fields{
 			"entity_type": "source",
@@ -97,7 +113,7 @@ func CreateSource(ctx context.Context, col driver.Collection, req *dapi.CreateEn
 	}, nil
 }
 
-func UpdateSource(ctx context.Context, col driver.Collection, req *dapi.UpdateEntityRequest) (*dapi.UpdateEntityResponse, error) {
+func (h *SourceHandler) UpdateSource(ctx context.Context, req *dapi.UpdateEntityRequest) (*dapi.UpdateEntityResponse, error) {
 	userId, userRoles, err := utils.GetUser(ctx)
 	if err != nil {
 		return nil, err
@@ -112,7 +128,7 @@ func UpdateSource(ctx context.Context, col driver.Collection, req *dapi.UpdateEn
 	}
 
 	existingSource := &model.Source{}
-	_, err = col.ReadDocument(ctx, req.GetKey(), existingSource)
+	_, err = h.col.ReadDocument(ctx, req.GetKey(), existingSource)
 	if err != nil {
 		if driver.IsNotFoundGeneral(err) {
 			return nil, status.Errorf(codes.NotFound, "entity not found")
@@ -141,7 +157,7 @@ func UpdateSource(ctx context.Context, col driver.Collection, req *dapi.UpdateEn
 
 	updatedSource := &model.Source{}
 	ctxWithReturnNew := driver.WithReturnNew(ctx, updatedSource)
-	meta, err := col.UpdateDocument(ctxWithReturnNew, req.GetKey(), source)
+	meta, err := h.col.UpdateDocument(ctxWithReturnNew, req.GetKey(), source)
 	if err != nil {
 		logger.WithFields(logrus.Fields{
 			"entity_type": "source",
@@ -160,7 +176,7 @@ func UpdateSource(ctx context.Context, col driver.Collection, req *dapi.UpdateEn
 	}, nil
 }
 
-func DeleteSource(ctx context.Context, col driver.Collection, req *dapi.DeleteEntityRequest) (*dapi.DeleteEntityResponse, error) {
+func (h *SourceHandler) DeleteSource(ctx context.Context, req *dapi.DeleteEntityRequest) (*dapi.DeleteEntityResponse, error) {
 	userId, _, err := utils.GetUser(ctx)
 	if err != nil {
 		return nil, err
@@ -170,7 +186,7 @@ func DeleteSource(ctx context.Context, col driver.Collection, req *dapi.DeleteEn
 	logger.Infof("[%s] requests to delete source with ID: %s", userId, req.GetKey())
 
 	existingSource := &model.Source{}
-	_, err = col.ReadDocument(ctx, req.GetKey(), existingSource)
+	_, err = h.col.ReadDocument(ctx, req.GetKey(), existingSource)
 	if err != nil {
 		if driver.IsNotFoundGeneral(err) {
 			return nil, status.Errorf(codes.NotFound, "entity not found")
@@ -191,7 +207,7 @@ func DeleteSource(ctx context.Context, col driver.Collection, req *dapi.DeleteEn
 		return nil, status.Errorf(codes.PermissionDenied, "Access denied: only owner can delete entity")
 	}
 
-	_, err = col.RemoveDocument(ctx, req.GetKey())
+	_, err = h.col.RemoveDocument(ctx, req.GetKey())
 	if err != nil {
 		logger.WithFields(logrus.Fields{
 			"entity_type": "source",

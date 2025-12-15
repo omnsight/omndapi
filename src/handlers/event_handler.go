@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"context"
+	"fmt"
 	"slices"
 
 	"github.com/arangodb/go-driver"
@@ -13,7 +14,26 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func GetEvent(ctx context.Context, col driver.Collection, req *dapi.GetEntityRequest) (*dapi.GetEntityResponse, error) {
+type EventHandler struct {
+	col driver.Collection
+}
+
+func NewEventHandler(client *utils.ArangoDBClient) (*EventHandler, error) {
+	ctx := context.Background()
+	col, err := client.GetCreateCollection(ctx, "event", driver.CreateVertexCollectionOptions{})
+	if err != nil {
+		return nil, fmt.Errorf("failed to get or create event collection: %v", err)
+	}
+	logrus.Infof("✅ Initialized collection %s", col.Name())
+
+	col.EnsurePersistentIndex(ctx, []string{"happened_at"}, &driver.EnsurePersistentIndexOptions{
+		InBackground: true,
+	})
+
+	return &EventHandler{col: col}, nil
+}
+
+func (h *EventHandler) GetEvent(ctx context.Context, req *dapi.GetEntityRequest) (*dapi.GetEntityResponse, error) {
 	userId, userRoles, err := utils.GetUser(ctx)
 	if err != nil {
 		return nil, err
@@ -23,7 +43,7 @@ func GetEvent(ctx context.Context, col driver.Collection, req *dapi.GetEntityReq
 	logger.Infof("[%s, %v] requests to get event with ID: %s", userId, userRoles, req.GetKey())
 
 	event := &model.Event{}
-	meta, err := col.ReadDocument(ctx, req.GetKey(), event)
+	meta, err := h.col.ReadDocument(ctx, req.GetKey(), event)
 	if err != nil {
 		if driver.IsNotFoundGeneral(err) {
 			logger.WithFields(logrus.Fields{
@@ -57,7 +77,7 @@ func GetEvent(ctx context.Context, col driver.Collection, req *dapi.GetEntityReq
 	}, nil
 }
 
-func CreateEvent(ctx context.Context, col driver.Collection, req *dapi.CreateEntityRequest) (*dapi.CreateEntityResponse, error) {
+func (h *EventHandler) CreateEvent(ctx context.Context, req *dapi.CreateEntityRequest) (*dapi.CreateEntityResponse, error) {
 	userId, userRoles, err := utils.GetUser(ctx)
 	if err != nil {
 		return nil, err
@@ -82,7 +102,7 @@ func CreateEvent(ctx context.Context, col driver.Collection, req *dapi.CreateEnt
 
 	createdEvent := &model.Event{}
 	ctxWithReturnNew := driver.WithReturnNew(ctx, createdEvent)
-	meta, err := col.CreateDocument(ctxWithReturnNew, event)
+	meta, err := h.col.CreateDocument(ctxWithReturnNew, event)
 	if err != nil {
 		logger.WithFields(logrus.Fields{
 			"entity_type": "event",
@@ -100,7 +120,7 @@ func CreateEvent(ctx context.Context, col driver.Collection, req *dapi.CreateEnt
 	}, nil
 }
 
-func UpdateEvent(ctx context.Context, col driver.Collection, req *dapi.UpdateEntityRequest) (*dapi.UpdateEntityResponse, error) {
+func (h *EventHandler) UpdateEvent(ctx context.Context, req *dapi.UpdateEntityRequest) (*dapi.UpdateEntityResponse, error) {
 	userId, userRoles, err := utils.GetUser(ctx)
 	if err != nil {
 		return nil, err
@@ -115,7 +135,7 @@ func UpdateEvent(ctx context.Context, col driver.Collection, req *dapi.UpdateEnt
 	}
 
 	existingEvent := &model.Event{}
-	_, err = col.ReadDocument(ctx, req.GetKey(), existingEvent)
+	_, err = h.col.ReadDocument(ctx, req.GetKey(), existingEvent)
 	if err != nil {
 		if driver.IsNotFoundGeneral(err) {
 			return nil, status.Errorf(codes.NotFound, "entity not found")
@@ -144,7 +164,7 @@ func UpdateEvent(ctx context.Context, col driver.Collection, req *dapi.UpdateEnt
 
 	updatedEvent := &model.Event{}
 	ctxWithReturnNew := driver.WithReturnNew(ctx, updatedEvent)
-	meta, err := col.UpdateDocument(ctxWithReturnNew, req.GetKey(), event)
+	meta, err := h.col.UpdateDocument(ctxWithReturnNew, req.GetKey(), event)
 	if err != nil {
 		logger.WithFields(logrus.Fields{
 			"entity_type": "event",
@@ -163,7 +183,7 @@ func UpdateEvent(ctx context.Context, col driver.Collection, req *dapi.UpdateEnt
 	}, nil
 }
 
-func DeleteEvent(ctx context.Context, col driver.Collection, req *dapi.DeleteEntityRequest) (*dapi.DeleteEntityResponse, error) {
+func (h *EventHandler) DeleteEvent(ctx context.Context, req *dapi.DeleteEntityRequest) (*dapi.DeleteEntityResponse, error) {
 	userId, _, err := utils.GetUser(ctx)
 	if err != nil {
 		return nil, err
@@ -173,7 +193,7 @@ func DeleteEvent(ctx context.Context, col driver.Collection, req *dapi.DeleteEnt
 	logger.Infof("[%s] requests to delete event with ID: %s", userId, req.GetKey())
 
 	existingEvent := &model.Event{}
-	_, err = col.ReadDocument(ctx, req.GetKey(), existingEvent)
+	_, err = h.col.ReadDocument(ctx, req.GetKey(), existingEvent)
 	if err != nil {
 		if driver.IsNotFoundGeneral(err) {
 			return nil, status.Errorf(codes.NotFound, "entity not found")
@@ -194,7 +214,7 @@ func DeleteEvent(ctx context.Context, col driver.Collection, req *dapi.DeleteEnt
 		return nil, status.Errorf(codes.PermissionDenied, "Access denied: only owner can delete entity")
 	}
 
-	_, err = col.RemoveDocument(ctx, req.GetKey())
+	_, err = h.col.RemoveDocument(ctx, req.GetKey())
 	if err != nil {
 		logger.WithFields(logrus.Fields{
 			"entity_type": "event",
