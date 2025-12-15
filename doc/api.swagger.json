@@ -448,15 +448,27 @@
           "type": "string",
           "title": "@gotags: json:\"_rev,omitempty\""
         },
-        "roles": {
+        "owner": {
+          "type": "string"
+        },
+        "read": {
           "type": "array",
           "items": {
             "type": "string"
           }
         },
-        "location": {
-          "$ref": "#/definitions/v1LocationData",
+        "write": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "type": {
+          "type": "string",
           "title": "Main Data"
+        },
+        "location": {
+          "$ref": "#/definitions/v1LocationData"
         },
         "title": {
           "type": "string"
@@ -562,17 +574,26 @@
           "type": "string",
           "title": "@gotags: json:\"_rev,omitempty\""
         },
-        "roles": {
+        "owner": {
+          "type": "string"
+        },
+        "read": {
           "type": "array",
           "items": {
             "type": "string"
           }
         },
-        "name": {
+        "write": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "type": {
           "type": "string",
           "title": "Main Data"
         },
-        "type": {
+        "name": {
           "type": "string"
         },
         "foundedAt": {
@@ -615,17 +636,26 @@
           "type": "string",
           "title": "@gotags: json:\"_rev,omitempty\""
         },
-        "roles": {
+        "owner": {
+          "type": "string"
+        },
+        "read": {
           "type": "array",
           "items": {
             "type": "string"
           }
         },
-        "name": {
+        "write": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "role": {
           "type": "string",
           "title": "Main Data"
         },
-        "role": {
+        "name": {
           "type": "string"
         },
         "nationality": {
@@ -681,7 +711,16 @@
           "type": "string",
           "title": "@gotags: json:\"_rev,omitempty\""
         },
-        "roles": {
+        "owner": {
+          "type": "string"
+        },
+        "read": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "write": {
           "type": "array",
           "items": {
             "type": "string"
@@ -725,32 +764,40 @@
           "type": "string",
           "title": "@gotags: json:\"_rev,omitempty\""
         },
-        "roles": {
+        "owner": {
+          "type": "string"
+        },
+        "read": {
           "type": "array",
           "items": {
             "type": "string"
           }
         },
-        "name": {
+        "write": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "type": {
           "type": "string",
           "title": "Main Data"
         },
         "url": {
           "type": "string"
         },
-        "rootUrl": {
+        "name": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "description": {
           "type": "string"
         },
         "reliability": {
           "type": "integer",
           "format": "int32"
-        },
-        "monitoring": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "title": {
-          "type": "string"
         },
         "createdAt": {
           "type": "string",
@@ -804,7 +851,16 @@
           "type": "string",
           "title": "@gotags: json:\"_rev,omitempty\""
         },
-        "roles": {
+        "owner": {
+          "type": "string"
+        },
+        "read": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "write": {
           "type": "array",
           "items": {
             "type": "string"
@@ -813,9 +869,6 @@
         "url": {
           "type": "string",
           "title": "Main Data"
-        },
-        "domain": {
-          "type": "string"
         },
         "title": {
           "type": "string"

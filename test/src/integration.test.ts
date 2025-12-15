@@ -48,22 +48,33 @@ describe('Integration Test', () => {
     // Events
     const event1: V1Entity = {
       event: {
-        title: "彩虹独角兽供应链魔法大会",
-        roles: ["admin"],
+        owner: "admin",
+        read: [],
+        write: [],
+        title: "Rainbow Unicorn Supply Chain Magic Conference",
+        type: "Magic Conference",
         location: {
           latitude: 36.8835,
           longitude: -123.43,
           countryCode: "FANTASY",
-          administrativeArea: "彩虹王国",
-          subAdministrativeArea: "魔法森林县",
-          locality: "糖果城堡",
-          subLocality: "彩虹大道",
-          address: "123 彩虹独角兽大街",
+          administrativeArea: "Rainbow Kingdom",
+          subAdministrativeArea: "Magic Forest County",
+          locality: "Candy Castle",
+          subLocality: "Rainbow Avenue",
+          address: "123 Rainbow Unicorn Street",
           postalCode: 99999,
         },
-        description: "本次大会由彩虹独角兽主办，讨论如何用魔法粉末重组供应链，使用彩虹桥运输货物，以及如何用魔法棒调整关税政策。与会者包括会说话的动物、会飞的汽车和会跳舞的树木，共同探讨用童话方式解决现实问题。",
-        tags: ["产业", "供应链", "关税"],
+        description: "Hosted by Rainbow Unicorn, this conference discusses how to restructure the supply chain with magic powder, transport goods using the Rainbow Bridge, and adjust tariff policies with magic wands. Attendees include talking animals, flying cars, and dancing trees, exploring fairytale solutions to real-world problems.",
+        tags: ["Industry", "Supply Chain", "Tariff"],
         happenedAt: Math.floor(Date.now() / 1000).toString(),
+        attributes: {
+          zh: {
+            title: "彩虹独角兽供应链魔法大会",
+            type: "魔法大会",
+            description: "本次大会由彩虹独角兽主办，讨论如何用魔法粉末重组供应链，使用彩虹桥运输货物，以及如何用魔法棒调整关税政策。与会者包括会说话的动物、会飞的汽车和会跳舞的树木，共同探讨用童话方式解决现实问题。",
+            tags: ["产业", "供应链", "关税"],
+          },
+        },
       }
     };
     const { data: respE1 } = await api.v1.entityServiceCreateEntity("event", event1);
@@ -72,22 +83,33 @@ describe('Integration Test', () => {
 
     const event2: V1Entity = {
       event: {
-        title: "星际穿越贸易博览会",
-        roles: ["admin"],
+        owner: "admin",
+        read: [],
+        write: [],
+        title: "Interstellar Trade Expo",
+        type: "Expo",
         location: {
           latitude: 40.7128,
           longitude: -74.0060,
           countryCode: "SPACE",
-          administrativeArea: "银河系",
-          subAdministrativeArea: "太阳系",
-          locality: "火星殖民地",
-          subLocality: "红色平原",
-          address: "42 火星一号大道",
+          administrativeArea: "Milky Way",
+          subAdministrativeArea: "Solar System",
+          locality: "Mars Colony",
+          subLocality: "Red Plains",
+          address: "42 Mars One Avenue",
           postalCode: 0,
         },
-        description: "来自全宇宙的商人和探险家齐聚一堂，展示最新的光速飞船、量子通讯设备和反重力靴子。重点讨论如何建立跨星系自由贸易区，以及如何应对黑洞造成的物流延误。",
-        tags: ["科技", "贸易", "星际"],
+        description: "Merchants and explorers from all over the universe gather together to showcase the latest light-speed spaceships, quantum communication devices, and anti-gravity boots. Key discussions include how to establish an intergalactic free trade zone and how to deal with logistics delays caused by black holes.",
+        tags: ["Technology", "Trade", "Interstellar"],
         happenedAt: Math.floor(Date.now() / 1000).toString(),
+        attributes: {
+          zh: {
+            title: "星际穿越贸易博览会",
+            type: "博览会",
+            description: "来自全宇宙的商人和探险家齐聚一堂，展示最新的光速飞船、量子通讯设备和反重力靴子。重点讨论如何建立跨星系自由贸易区，以及如何应对黑洞造成的物流延误。",
+            tags: ["科技", "贸易", "星际"],
+          },
+        },
       }
     };
     const { data: respE2 } = await api.v1.entityServiceCreateEntity("event", event2);
@@ -95,22 +117,33 @@ describe('Integration Test', () => {
 
     const event3: V1Entity = {
       event: {
-        title: "深海奇珍异宝拍卖会",
-        roles: ["admin"],
+        owner: "admin",
+        read: [],
+        write: [],
+        title: "Deep Sea Rare Treasures Auction",
+        type: "Auction",
         location: {
           latitude: -25.2744,
           longitude: 133.7751,
           countryCode: "OCEAN",
-          administrativeArea: "太平洋",
-          subAdministrativeArea: "马里亚纳海沟",
-          locality: "亚特兰蒂斯遗址",
-          subLocality: "珊瑚广场",
-          address: "888 深海大道",
+          administrativeArea: "Pacific Ocean",
+          subAdministrativeArea: "Mariana Trench",
+          locality: "Atlantis Ruins",
+          subLocality: "Coral Plaza",
+          address: "888 Deep Sea Avenue",
           postalCode: 88888,
         },
-        description: "神秘的深海拍卖会，拍品包括美人鱼的眼泪、巨型章鱼的墨汁画和沉船中的古老金币。本次拍卖会所得款项将用于保护海洋生态环境，防止塑料垃圾污染海洋。",
-        tags: ["拍卖", "珍宝", "环保"],
+        description: "A mysterious deep-sea auction featuring items such as mermaid tears, ink paintings by giant octopuses, and ancient gold coins from shipwrecks. Proceeds from this auction will be used to protect the marine ecosystem and prevent plastic pollution.",
+        tags: ["Auction", "Treasure", "Environmental Protection"],
         happenedAt: Math.floor(Date.now() / 1000).toString(),
+        attributes: {
+          zh: {
+            title: "深海奇珍异宝拍卖会",
+            type: "拍卖会",
+            description: "神秘的深海拍卖会，拍品包括美人鱼的眼泪、巨型章鱼的墨汁画和沉船中的古老金币。本次拍卖会所得款项将用于保护海洋生态环境，防止塑料垃圾污染海洋。",
+            tags: ["拍卖", "珍宝", "环保"],
+          },
+        },
       }
     };
     const { data: respE3 } = await api.v1.entityServiceCreateEntity("event", event3);
@@ -119,14 +152,24 @@ describe('Integration Test', () => {
     // Persons
     const person1: V1Entity = {
       person: {
-        roles: ["admin"],
-        name: "白袍甘道夫",
-        role: "巫师",
-        nationality: "迈雅",
+        owner: "admin",
+        read: [],
+        write: [],
+        name: "Gandalf the White",
+        role: "Wizard",
+        nationality: "Maia",
         birthDate: Math.floor(Date.now() / 1000).toString(),
         updatedAt: Math.floor(Date.now() / 1000).toString(),
-        tags: ["巫师", "领袖", "魔法"],
+        tags: ["Wizard", "Leader", "Magic"],
         aliases: ["WG"],
+        attributes: {
+          zh: {
+            name: "白袍甘道夫",
+            role: "巫师",
+            nationality: "迈雅",
+            tags: ["巫师", "领袖", "魔法"],
+          },
+        },
       }
     };
     const { data: respP1 } = await api.v1.entityServiceCreateEntity("person", person1);
@@ -134,14 +177,24 @@ describe('Integration Test', () => {
 
     const person2: V1Entity = {
       person: {
-        roles: ["admin"],
-        name: "埃隆·马斯",
-        role: "企业家",
-        nationality: "火星人",
+        owner: "admin",
+        read: [],
+        write: [],
+        name: "Elon Musk",
+        role: "Entrepreneur",
+        nationality: "Martian",
         birthDate: Math.floor(Date.now() / 1000).toString(),
         updatedAt: Math.floor(Date.now() / 1000).toString(),
-        tags: ["企业家", "科技", "太空"],
+        tags: ["Entrepreneur", "Technology", "Space"],
         aliases: ["EM"],
+        attributes: {
+          zh: {
+            name: "埃隆·马斯",
+            role: "企业家",
+            nationality: "火星人",
+            tags: ["企业家", "科技", "太空"],
+          },
+        },
       }
     };
     const { data: respP2 } = await api.v1.entityServiceCreateEntity("person", person2);
@@ -149,14 +202,24 @@ describe('Integration Test', () => {
 
     const person3: V1Entity = {
       person: {
-        roles: ["admin"],
-        name: "尼莫船长",
-        role: "船长",
-        nationality: "印度",
+        owner: "admin",
+        read: [],
+        write: [],
+        name: "Captain Nemo",
+        role: "Captain",
+        nationality: "Indian",
         birthDate: Math.floor(Date.now() / 1000).toString(),
         updatedAt: Math.floor(Date.now() / 1000).toString(),
-        tags: ["船长", "探险家", "海洋"],
+        tags: ["Captain", "Explorer", "Ocean"],
         aliases: ["Nemo"],
+        attributes: {
+          zh: {
+            name: "尼莫船长",
+            role: "船长",
+            nationality: "印度",
+            tags: ["船长", "探险家", "海洋"],
+          },
+        },
       }
     };
     const { data: respP3 } = await api.v1.entityServiceCreateEntity("person", person3);
@@ -165,13 +228,22 @@ describe('Integration Test', () => {
     // Organizations
     const org1: V1Entity = {
       organization: {
-        roles: ["admin"],
-        name: "独角兽供应链公司",
-        type: "盈利性公司",
+        owner: "admin",
+        read: [],
+        write: [],
+        name: "Unicorn Supply Chain Co.",
+        type: "For-Profit Company",
         foundedAt: Math.floor(Date.now() / 1000).toString(),
         discoveredAt: Math.floor(Date.now() / 1000).toString(),
         lastVisited: Math.floor(Date.now() / 1000).toString(),
-        tags: ["物流", "魔法", "供应链"],
+        tags: ["Logistics", "Magic", "Supply Chain"],
+        attributes: {
+          zh: {
+            name: "独角兽供应链公司",
+            type: "盈利性公司",
+            tags: ["物流", "魔法", "供应链"],
+          },
+        },
       }
     };
     const { data: respO1 } = await api.v1.entityServiceCreateEntity("organization", org1);
@@ -179,13 +251,22 @@ describe('Integration Test', () => {
 
     const org2: V1Entity = {
       organization: {
-        roles: ["admin"],
-        name: "星际探索者",
-        type: "盈利性公司",
+        owner: "admin",
+        read: [],
+        write: [],
+        name: "Interstellar Explorers",
+        type: "For-Profit Company",
         foundedAt: Math.floor(Date.now() / 1000).toString(),
         discoveredAt: Math.floor(Date.now() / 1000).toString(),
         lastVisited: Math.floor(Date.now() / 1000).toString(),
-        tags: ["航天", "科技", "探索"],
+        tags: ["Spaceflight", "Technology", "Exploration"],
+        attributes: {
+          zh: {
+            name: "星际探索者",
+            type: "盈利性公司",
+            tags: ["航天", "科技", "探索"],
+          },
+        },
       }
     };
     const { data: respO2 } = await api.v1.entityServiceCreateEntity("organization", org2);
@@ -193,13 +274,22 @@ describe('Integration Test', () => {
 
     const org3: V1Entity = {
       organization: {
-        roles: ["admin"],
-        name: "深蓝保护协会",
-        type: "非营利组织",
+        owner: "admin",
+        read: [],
+        write: [],
+        name: "Deep Blue Conservation Society",
+        type: "Non-Profit Organization",
         foundedAt: Math.floor(Date.now() / 1000).toString(),
         discoveredAt: Math.floor(Date.now() / 1000).toString(),
         lastVisited: Math.floor(Date.now() / 1000).toString(),
-        tags: ["环保", "海洋", "公益"],
+        tags: ["Environmental Protection", "Ocean", "Charity"],
+        attributes: {
+          zh: {
+            name: "深蓝保护协会",
+            type: "非营利组织",
+            tags: ["环保", "海洋", "公益"],
+          },
+        },
       }
     };
     const { data: respO3 } = await api.v1.entityServiceCreateEntity("organization", org3);
@@ -208,15 +298,23 @@ describe('Integration Test', () => {
     // Websites
     const web1: V1Entity = {
       website: {
-        roles: ["admin"],
+        owner: "admin",
+        read: [],
+        write: [],
         url: "https://www.magic-supply-chain.fantasy",
-        domain: "magic-supply-chain.fantasy",
-        title: "独角兽供应链官方网",
-        description: "独角兽供应链公司的官方网站，涵盖从供应链物流到魔法业务的所有内容。",
+        title: "Unicorn Supply Chain Official Website",
+        description: "The official website of Unicorn Supply Chain Company, covering everything from supply chain logistics to magic business.",
         foundedAt: Math.floor(Date.now() / 1000).toString(),
         discoveredAt: Math.floor(Date.now() / 1000).toString(),
         lastVisited: Math.floor(Date.now() / 1000).toString(),
-        tags: ["魔法", "商业"],
+        tags: ["Magic", "Business"],
+        attributes: {
+          zh: {
+            title: "独角兽供应链官方网",
+            description: "独角兽供应链公司的官方网站，涵盖从供应链物流到魔法业务的所有内容。",
+            tags: ["魔法", "商业"],
+          },
+        },
       }
     };
     const { data: respW1 } = await api.v1.entityServiceCreateEntity("website", web1);
@@ -224,15 +322,23 @@ describe('Integration Test', () => {
 
     const web2: V1Entity = {
       website: {
-        roles: ["admin"],
+        owner: "admin",
+        read: [],
+        write: [],
         url: "https://www.mars-colonies.space",
-        domain: "mars-colonies.space",
-        title: "火星殖民地快讯",
-        description: "关于火星殖民地建设、生活和贸易的最新消息。",
+        title: "Mars Colony Express",
+        description: "Latest news about Mars colony construction, life, and trade.",
         foundedAt: Math.floor(Date.now() / 1000).toString(),
         discoveredAt: Math.floor(Date.now() / 1000).toString(),
         lastVisited: Math.floor(Date.now() / 1000).toString(),
-        tags: ["太空", "新闻"],
+        tags: ["Space", "News"],
+        attributes: {
+          zh: {
+            title: "火星殖民地快讯",
+            description: "关于火星殖民地建设、生活和贸易的最新消息。",
+            tags: ["太空", "新闻"],
+          },
+        },
       }
     };
     const { data: respW2 } = await api.v1.entityServiceCreateEntity("website", web2);
@@ -241,15 +347,27 @@ describe('Integration Test', () => {
     // Sources
     const src1: V1Entity = {
       source: {
-        roles: ["admin"],
-        name: "预言家日报",
+        owner: "admin",
+        read: [],
+        write: [],
+        name: "The Daily Prophet",
+        type: "News",
         url: "https://www.thedailyprophet.com/article-one",
-        rootUrl: "https://www.thedailyprophet.com",
         reliability: 20,
-        title: "头条新闻：魔法供应链的崛起",
+        title: "Headline News: The Rise of Magic Supply Chain",
+        description: "The Daily Prophet released the latest news on the magic supply chain, which will change the operating model of the entire magic industry.",
         createdAt: Math.floor(Date.now() / 1000).toString(),
         updatedAt: Math.floor(Date.now() / 1000).toString(),
-        tags: ["新闻", "魔法"],
+        tags: ["News", "Magic"],
+        attributes: {
+          zh: {
+            name: "预言家日报",
+            type: "新闻",
+            title: "头条新闻：魔法供应链的崛起",
+            description: "预言家日报发布了关于魔法供应链的最新消息，这将改变整个魔法行业的运营模式。",
+            tags: ["新闻", "魔法"],
+          },
+        },
       }
     };
     const { data: respS1 } = await api.v1.entityServiceCreateEntity("source", src1);
@@ -257,15 +375,27 @@ describe('Integration Test', () => {
 
     const src2: V1Entity = {
       source: {
-        roles: ["admin"],
-        name: "银河公报",
+        owner: "admin",
+        read: [],
+        write: [],
+        name: "Galactic Gazette",
+        type: "News",
         url: "https://www.galactic-gazette.space/daily-news",
-        rootUrl: "https://www.galactic-gazette.space",
         reliability: 80,
-        title: "银河系贸易协定签署",
+        title: "Galactic Trade Agreement Signed",
+        description: "The Galactic Gazette released the latest news on the signing of the Galactic Trade Agreement, which will change the trade model of the entire universe.",
         createdAt: Math.floor(Date.now() / 1000).toString(),
         updatedAt: Math.floor(Date.now() / 1000).toString(),
-        tags: ["新闻", "太空"],
+        tags: ["News", "Space"],
+        attributes: {
+          zh: {
+            name: "银河公报",
+            type: "新闻",
+            title: "银河系贸易协定签署",
+            description: "银河公报发布了关于银河系贸易协定签署的最新消息，这将改变整个宇宙的贸易模式。",
+            tags: ["新闻", "太空"],
+          },
+        },
       }
     };
     const { data: respS2 } = await api.v1.entityServiceCreateEntity("source", src2);
@@ -273,15 +403,27 @@ describe('Integration Test', () => {
 
     const src3: V1Entity = {
       source: {
-        roles: ["admin"],
-        name: "深海回声",
+        owner: "admin",
+        read: [],
+        write: [],
+        name: "Deep Sea Echo",
+        type: "News",
         url: "https://www.deep-sea-echo.ocean/reports",
-        rootUrl: "https://www.deep-sea-echo.ocean",
         reliability: 90,
-        title: "亚特兰蒂斯遗址的新发现",
+        title: "New Discovery at Atlantis Ruins",
+        description: "The Deep Sea Echo team has made a new discovery at the Atlantis Ruins, a mysterious island containing ancient magical powers.",
         createdAt: Math.floor(Date.now() / 1000).toString(),
         updatedAt: Math.floor(Date.now() / 1000).toString(),
-        tags: ["新闻", "海洋"],
+        tags: ["News", "Ocean"],
+        attributes: {
+          zh: {
+            name: "深海回声",
+            type: "新闻",
+            title: "亚特兰蒂斯遗址的新发现",
+            description: "深海回声团队发现了亚特兰蒂斯遗址的新发现，这是一个神秘的岛屿，包含了古代的魔法力量。",
+            tags: ["新闻", "海洋"],
+          },
+        },
       }
     };
     const { data: respS3 } = await api.v1.entityServiceCreateEntity("source", src3);
@@ -291,6 +433,9 @@ describe('Integration Test', () => {
     await api.v1.relationshipServiceCreateRelationship({
       from: e1?.event?.id,
       to: p1?.person?.id,
+      owner: "admin",
+      read: [],
+      write: [],
       name: "participant",
       attributes: {
         zh: {
@@ -302,6 +447,9 @@ describe('Integration Test', () => {
     await api.v1.relationshipServiceCreateRelationship({
       from: e1?.event?.id,
       to: p2?.person?.id,
+      owner: "admin",
+      read: [],
+      write: [],
       name: "hosted_by",
       attributes: {
         zh: {
@@ -313,6 +461,9 @@ describe('Integration Test', () => {
     await api.v1.relationshipServiceCreateRelationship({
       from: e1?.event?.id,
       to: o1?.organization?.id,
+      owner: "admin",
+      read: [],
+      write: [],
       name: "organized_by",
       attributes: {
         zh: {
@@ -324,6 +475,9 @@ describe('Integration Test', () => {
     await api.v1.relationshipServiceCreateRelationship({
       from: e1?.event?.id,
       to: s1?.source?.id,
+      owner: "admin",
+      read: [],
+      write: [],
       name: "reported_by",
       attributes: {
         zh: {
@@ -335,6 +489,9 @@ describe('Integration Test', () => {
     await api.v1.relationshipServiceCreateRelationship({
       from: e1?.event?.id,
       to: s2?.source?.id,
+      owner: "admin",
+      read: [],
+      write: [],
       name: "sourced_from",
       attributes: {
         zh: {
@@ -346,6 +503,9 @@ describe('Integration Test', () => {
     await api.v1.relationshipServiceCreateRelationship({
       from: e2?.event?.id,
       to: p2?.person?.id,
+      owner: "admin",
+      read: [],
+      write: [],
       name: "sponsor",
       attributes: {
         zh: {
@@ -357,6 +517,9 @@ describe('Integration Test', () => {
     await api.v1.relationshipServiceCreateRelationship({
       from: e2?.event?.id,
       to: o2?.organization?.id,
+      owner: "admin",
+      read: [],
+      write: [],
       name: "sponsor",
       attributes: {
         zh: {
@@ -368,6 +531,9 @@ describe('Integration Test', () => {
     await api.v1.relationshipServiceCreateRelationship({
       from: e2?.event?.id,
       to: s2?.source?.id,
+      owner: "admin",
+      read: [],
+      write: [],
       name: "sourced_from",
       attributes: {
         zh: {
@@ -379,6 +545,9 @@ describe('Integration Test', () => {
     await api.v1.relationshipServiceCreateRelationship({
       from: o1?.organization?.id,
       to: w1?.website?.id,
+      owner: "admin",
+      read: [],
+      write: [],
       name: "has_website",
       attributes: {
         zh: {
@@ -390,6 +559,9 @@ describe('Integration Test', () => {
     const { data: respRel } = await api.v1.relationshipServiceCreateRelationship({
       from: e3?.event?.id,
       to: p3?.person?.id,
+      owner: "admin",
+      read: [],
+      write: [],
       name: "temp_relation",
       attributes: {
         zh: {
