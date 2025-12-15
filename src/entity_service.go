@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"slices"
 	"sync"
 
 	"github.com/arangodb/go-driver"
