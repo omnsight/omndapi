@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"context"
+	"fmt"
 	"slices"
 
 	"github.com/arangodb/go-driver"
@@ -13,7 +14,22 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func GetOrganization(ctx context.Context, col driver.Collection, req *dapi.GetEntityRequest) (*dapi.GetEntityResponse, error) {
+type OrganizationHandler struct {
+	col driver.Collection
+}
+
+func NewOrganizationHandler(client *utils.ArangoDBClient) (*OrganizationHandler, error) {
+	ctx := context.Background()
+	col, err := client.GetCreateCollection(ctx, "organization", driver.CreateVertexCollectionOptions{})
+	if err != nil {
+		return nil, fmt.Errorf("failed to get or create organization collection: %v", err)
+	}
+	logrus.Infof("✅ Initialized collection %s", col.Name())
+
+	return &OrganizationHandler{col: col}, nil
+}
+
+func (h *OrganizationHandler) GetOrganization(ctx context.Context, req *dapi.GetEntityRequest) (*dapi.GetEntityResponse, error) {
 	userId, userRoles, err := utils.GetUser(ctx)
 	if err != nil {
 		return nil, err
@@ -23,7 +39,7 @@ func GetOrganization(ctx context.Context, col driver.Collection, req *dapi.GetEn
 	logger.Infof("[%s, %v] requests to get organization with ID: %s", userId, userRoles, req.GetKey())
 
 	organization := &model.Organization{}
-	meta, err := col.ReadDocument(ctx, req.GetKey(), organization)
+	meta, err := h.col.ReadDocument(ctx, req.GetKey(), organization)
 	if err != nil {
 		if driver.IsNotFoundGeneral(err) {
 			return nil, status.Errorf(codes.NotFound, "entity not found")
@@ -54,7 +70,7 @@ func GetOrganization(ctx context.Context, col driver.Collection, req *dapi.GetEn
 	}, nil
 }
 
-func CreateOrganization(ctx context.Context, col driver.Collection, req *dapi.CreateEntityRequest) (*dapi.CreateEntityResponse, error) {
+func (h *OrganizationHandler) CreateOrganization(ctx context.Context, req *dapi.CreateEntityRequest) (*dapi.CreateEntityResponse, error) {
 	userId, userRoles, err := utils.GetUser(ctx)
 	if err != nil {
 		return nil, err
@@ -79,7 +95,7 @@ func CreateOrganization(ctx context.Context, col driver.Collection, req *dapi.Cr
 
 	createdOrganization := &model.Organization{}
 	ctxWithReturnNew := driver.WithReturnNew(ctx, createdOrganization)
-	meta, err := col.CreateDocument(ctxWithReturnNew, organization)
+	meta, err := h.col.CreateDocument(ctxWithReturnNew, organization)
 	if err != nil {
 		logger.WithFields(logrus.Fields{
 			"entity_type": "organization",
@@ -97,7 +113,7 @@ func CreateOrganization(ctx context.Context, col driver.Collection, req *dapi.Cr
 	}, nil
 }
 
-func UpdateOrganization(ctx context.Context, col driver.Collection, req *dapi.UpdateEntityRequest) (*dapi.UpdateEntityResponse, error) {
+func (h *OrganizationHandler) UpdateOrganization(ctx context.Context, req *dapi.UpdateEntityRequest) (*dapi.UpdateEntityResponse, error) {
 	userId, userRoles, err := utils.GetUser(ctx)
 	if err != nil {
 		return nil, err
@@ -112,7 +128,7 @@ func UpdateOrganization(ctx context.Context, col driver.Collection, req *dapi.Up
 	}
 
 	existingOrganization := &model.Organization{}
-	_, err = col.ReadDocument(ctx, req.GetKey(), existingOrganization)
+	_, err = h.col.ReadDocument(ctx, req.GetKey(), existingOrganization)
 	if err != nil {
 		if driver.IsNotFoundGeneral(err) {
 			return nil, status.Errorf(codes.NotFound, "entity not found")
@@ -141,7 +157,7 @@ func UpdateOrganization(ctx context.Context, col driver.Collection, req *dapi.Up
 
 	updatedOrganization := &model.Organization{}
 	ctxWithReturnNew := driver.WithReturnNew(ctx, updatedOrganization)
-	meta, err := col.UpdateDocument(ctxWithReturnNew, req.GetKey(), organization)
+	meta, err := h.col.UpdateDocument(ctxWithReturnNew, req.GetKey(), organization)
 	if err != nil {
 		logger.WithFields(logrus.Fields{
 			"entity_type": "organization",
@@ -160,7 +176,7 @@ func UpdateOrganization(ctx context.Context, col driver.Collection, req *dapi.Up
 	}, nil
 }
 
-func DeleteOrganization(ctx context.Context, col driver.Collection, req *dapi.DeleteEntityRequest) (*dapi.DeleteEntityResponse, error) {
+func (h *OrganizationHandler) DeleteOrganization(ctx context.Context, req *dapi.DeleteEntityRequest) (*dapi.DeleteEntityResponse, error) {
 	userId, _, err := utils.GetUser(ctx)
 	if err != nil {
 		return nil, err
@@ -170,7 +186,7 @@ func DeleteOrganization(ctx context.Context, col driver.Collection, req *dapi.De
 	logger.Infof("[%s] requests to delete organization with ID: %s", userId, req.GetKey())
 
 	existingOrganization := &model.Organization{}
-	_, err = col.ReadDocument(ctx, req.GetKey(), existingOrganization)
+	_, err = h.col.ReadDocument(ctx, req.GetKey(), existingOrganization)
 	if err != nil {
 		if driver.IsNotFoundGeneral(err) {
 			return nil, status.Errorf(codes.NotFound, "entity not found")
@@ -191,7 +207,7 @@ func DeleteOrganization(ctx context.Context, col driver.Collection, req *dapi.De
 		return nil, status.Errorf(codes.PermissionDenied, "Access denied: only owner can delete entity")
 	}
 
-	_, err = col.RemoveDocument(ctx, req.GetKey())
+	_, err = h.col.RemoveDocument(ctx, req.GetKey())
 	if err != nil {
 		logger.WithFields(logrus.Fields{
 			"entity_type": "organization",

@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"context"
+	"fmt"
 	"slices"
 
 	"github.com/arangodb/go-driver"
@@ -13,7 +14,22 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func GetWebsite(ctx context.Context, col driver.Collection, req *dapi.GetEntityRequest) (*dapi.GetEntityResponse, error) {
+type WebsiteHandler struct {
+	col driver.Collection
+}
+
+func NewWebsiteHandler(client *utils.ArangoDBClient) (*WebsiteHandler, error) {
+	ctx := context.Background()
+	col, err := client.GetCreateCollection(ctx, "website", driver.CreateVertexCollectionOptions{})
+	if err != nil {
+		return nil, fmt.Errorf("failed to get or create website collection: %v", err)
+	}
+	logrus.Infof("✅ Initialized collection %s", col.Name())
+
+	return &WebsiteHandler{col: col}, nil
+}
+
+func (h *WebsiteHandler) GetWebsite(ctx context.Context, req *dapi.GetEntityRequest) (*dapi.GetEntityResponse, error) {
 	userId, userRoles, err := utils.GetUser(ctx)
 	if err != nil {
 		return nil, err
@@ -23,7 +39,7 @@ func GetWebsite(ctx context.Context, col driver.Collection, req *dapi.GetEntityR
 	logger.Infof("[%s, %v] requests to get website with ID: %s", userId, userRoles, req.GetKey())
 
 	website := &model.Website{}
-	meta, err := col.ReadDocument(ctx, req.GetKey(), website)
+	meta, err := h.col.ReadDocument(ctx, req.GetKey(), website)
 	if err != nil {
 		if driver.IsNotFoundGeneral(err) {
 			return nil, status.Errorf(codes.NotFound, "entity not found")
@@ -54,7 +70,7 @@ func GetWebsite(ctx context.Context, col driver.Collection, req *dapi.GetEntityR
 	}, nil
 }
 
-func CreateWebsite(ctx context.Context, col driver.Collection, req *dapi.CreateEntityRequest) (*dapi.CreateEntityResponse, error) {
+func (h *WebsiteHandler) CreateWebsite(ctx context.Context, req *dapi.CreateEntityRequest) (*dapi.CreateEntityResponse, error) {
 	userId, userRoles, err := utils.GetUser(ctx)
 	if err != nil {
 		return nil, err
@@ -79,7 +95,7 @@ func CreateWebsite(ctx context.Context, col driver.Collection, req *dapi.CreateE
 
 	createdWebsite := &model.Website{}
 	ctxWithReturnNew := driver.WithReturnNew(ctx, createdWebsite)
-	meta, err := col.CreateDocument(ctxWithReturnNew, website)
+	meta, err := h.col.CreateDocument(ctxWithReturnNew, website)
 	if err != nil {
 		logger.WithFields(logrus.Fields{
 			"entity_type": "website",
@@ -97,7 +113,7 @@ func CreateWebsite(ctx context.Context, col driver.Collection, req *dapi.CreateE
 	}, nil
 }
 
-func UpdateWebsite(ctx context.Context, col driver.Collection, req *dapi.UpdateEntityRequest) (*dapi.UpdateEntityResponse, error) {
+func (h *WebsiteHandler) UpdateWebsite(ctx context.Context, req *dapi.UpdateEntityRequest) (*dapi.UpdateEntityResponse, error) {
 	userId, userRoles, err := utils.GetUser(ctx)
 	if err != nil {
 		return nil, err
@@ -112,7 +128,7 @@ func UpdateWebsite(ctx context.Context, col driver.Collection, req *dapi.UpdateE
 	}
 
 	existingWebsite := &model.Website{}
-	_, err = col.ReadDocument(ctx, req.GetKey(), existingWebsite)
+	_, err = h.col.ReadDocument(ctx, req.GetKey(), existingWebsite)
 	if err != nil {
 		if driver.IsNotFoundGeneral(err) {
 			return nil, status.Errorf(codes.NotFound, "entity not found")
@@ -141,7 +157,7 @@ func UpdateWebsite(ctx context.Context, col driver.Collection, req *dapi.UpdateE
 
 	updatedWebsite := &model.Website{}
 	ctxWithReturnNew := driver.WithReturnNew(ctx, updatedWebsite)
-	meta, err := col.UpdateDocument(ctxWithReturnNew, req.GetKey(), website)
+	meta, err := h.col.UpdateDocument(ctxWithReturnNew, req.GetKey(), website)
 	if err != nil {
 		logger.WithFields(logrus.Fields{
 			"entity_type": "website",
@@ -160,7 +176,7 @@ func UpdateWebsite(ctx context.Context, col driver.Collection, req *dapi.UpdateE
 	}, nil
 }
 
-func DeleteWebsite(ctx context.Context, col driver.Collection, req *dapi.DeleteEntityRequest) (*dapi.DeleteEntityResponse, error) {
+func (h *WebsiteHandler) DeleteWebsite(ctx context.Context, req *dapi.DeleteEntityRequest) (*dapi.DeleteEntityResponse, error) {
 	userId, _, err := utils.GetUser(ctx)
 	if err != nil {
 		return nil, err
@@ -170,7 +186,7 @@ func DeleteWebsite(ctx context.Context, col driver.Collection, req *dapi.DeleteE
 	logger.Infof("[%s] requests to delete website with ID: %s", userId, req.GetKey())
 
 	existingWebsite := &model.Website{}
-	_, err = col.ReadDocument(ctx, req.GetKey(), existingWebsite)
+	_, err = h.col.ReadDocument(ctx, req.GetKey(), existingWebsite)
 	if err != nil {
 		if driver.IsNotFoundGeneral(err) {
 			return nil, status.Errorf(codes.NotFound, "entity not found")
@@ -191,7 +207,7 @@ func DeleteWebsite(ctx context.Context, col driver.Collection, req *dapi.DeleteE
 		return nil, status.Errorf(codes.PermissionDenied, "Access denied: only owner can delete entity")
 	}
 
-	_, err = col.RemoveDocument(ctx, req.GetKey())
+	_, err = h.col.RemoveDocument(ctx, req.GetKey())
 	if err != nil {
 		logger.WithFields(logrus.Fields{
 			"entity_type": "website",
