@@ -1,125 +1,84 @@
 package utils
 
 import (
-	"fmt"
+	"slices"
 
-	"github.com/arangodb/go-driver"
-	"github.com/omnsight/omniscent-library/gen/model/v1"
+	"github.com/samber/lo"
 )
 
-// Helper functions for entity handling
-func GetEmptyStruct(entityType string) (interface{}, error) {
-	switch entityType {
-	case "event":
-		return &model.Event{}, nil
-	case "source":
-		return &model.Source{}, nil
-	case "website":
-		return &model.Website{}, nil
-	case "person":
-		return &model.Person{}, nil
-	case "organization":
-		return &model.Organization{}, nil
-	default:
-		return nil, fmt.Errorf("unknown entity type: %s", entityType)
+func CheckReadPermission(obj interface{}, userId string, userRoles []string) bool {
+	// 1. All read APIs should check if owner or read contains any of user id or user roles.
+
+	type ownerGetter interface {
+		GetOwner() string
 	}
+	type readGetter interface {
+		GetRead() []string
+	}
+
+	// Check Owner
+	if og, ok := obj.(ownerGetter); ok {
+		if og.GetOwner() == userId {
+			return true
+		}
+	}
+
+	// Check Read
+	if rg, ok := obj.(readGetter); ok {
+		readList := rg.GetRead()
+		if slices.Contains(readList, userId) {
+			return true
+		}
+		if len(lo.Intersect(readList, userRoles)) > 0 {
+			return true
+		}
+	}
+
+	return false
 }
 
-func UnwrapEntity(entity *model.Entity) (string, interface{}, error) {
-	if e := entity.GetEvent(); e != nil {
-		return "event", e, nil
+func CheckWritePermission(obj interface{}, userId string, userRoles []string) bool {
+	// 3. Update APIs should check if write or owner contains any of user id or user roles
+
+	type ownerGetter interface {
+		GetOwner() string
 	}
-	if e := entity.GetSource(); e != nil {
-		return "source", e, nil
+	type writeGetter interface {
+		GetWrite() []string
 	}
-	if e := entity.GetWebsite(); e != nil {
-		return "website", e, nil
+
+	// Check Owner
+	if og, ok := obj.(ownerGetter); ok {
+		if og.GetOwner() == userId {
+			return true
+		}
 	}
-	if e := entity.GetPerson(); e != nil {
-		return "person", e, nil
+
+	// Check Write
+	if wg, ok := obj.(writeGetter); ok {
+		writeList := wg.GetWrite()
+		if slices.Contains(writeList, userId) {
+			return true
+		}
+		if len(lo.Intersect(writeList, userRoles)) > 0 {
+			return true
+		}
 	}
-	if e := entity.GetOrganization(); e != nil {
-		return "organization", e, nil
-	}
-	return "", nil, fmt.Errorf("empty or unknown entity content")
+
+	return false
 }
 
-func WrapEntity(entityType string, obj interface{}) (*model.Entity, error) {
-	switch entityType {
-	case "event":
-		if v, ok := obj.(*model.Event); ok {
-			return &model.Entity{Entity: &model.Entity_Event{Event: v}}, nil
-		}
-	case "source":
-		if v, ok := obj.(*model.Source); ok {
-			return &model.Entity{Entity: &model.Entity_Source{Source: v}}, nil
-		}
-	case "website":
-		if v, ok := obj.(*model.Website); ok {
-			return &model.Entity{Entity: &model.Entity_Website{Website: v}}, nil
-		}
-	case "person":
-		if v, ok := obj.(*model.Person); ok {
-			return &model.Entity{Entity: &model.Entity_Person{Person: v}}, nil
-		}
-	case "organization":
-		if v, ok := obj.(*model.Organization); ok {
-			return &model.Entity{Entity: &model.Entity_Organization{Organization: v}}, nil
-		}
-	}
-	return nil, fmt.Errorf("failed to wrap entity: type mismatch for %s", entityType)
-}
+func CheckDeletePermission(obj interface{}, userId string) bool {
+	// 4. Delete API is limited to only owner.
 
-func SetEntityMeta(entityType string, obj interface{}, meta driver.DocumentMeta) error {
-	switch entityType {
-	case "event":
-		if v, ok := obj.(*model.Event); ok {
-			v.Id = meta.ID.String()
-			v.Key = meta.Key
-			v.Rev = meta.Rev
-			return nil
-		}
-	case "source":
-		if v, ok := obj.(*model.Source); ok {
-			v.Id = meta.ID.String()
-			v.Key = meta.Key
-			v.Rev = meta.Rev
-			return nil
-		}
-	case "website":
-		if v, ok := obj.(*model.Website); ok {
-			v.Id = meta.ID.String()
-			v.Key = meta.Key
-			v.Rev = meta.Rev
-			return nil
-		}
-	case "person":
-		if v, ok := obj.(*model.Person); ok {
-			v.Id = meta.ID.String()
-			v.Key = meta.Key
-			v.Rev = meta.Rev
-			return nil
-		}
-	case "organization":
-		if v, ok := obj.(*model.Organization); ok {
-			v.Id = meta.ID.String()
-			v.Key = meta.Key
-			v.Rev = meta.Rev
-			return nil
-		}
-	}
-	return fmt.Errorf("failed to set entity meta: type mismatch for %s", entityType)
-}
-
-func GetEntityRoles(entityType string, obj interface{}) ([]string, error) {
-	// Define an interface for the GetRoles method which is common to all entity types
-	type roleGetter interface {
-		GetRoles() []string
+	type ownerGetter interface {
+		GetOwner() string
 	}
 
-	if v, ok := obj.(roleGetter); ok {
-		return v.GetRoles(), nil
+	if og, ok := obj.(ownerGetter); ok {
+		if og.GetOwner() == userId {
+			return true
+		}
 	}
-
-	return nil, fmt.Errorf("failed to get entity roles: type mismatch for %s or method not available", entityType)
+	return false
 }
