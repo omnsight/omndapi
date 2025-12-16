@@ -15,6 +15,8 @@ import (
 
 	gwRuntime "github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/omnsight/omndapi/gen/dapi/v1"
+	"github.com/omnsight/omndapi/src/entity_service"
+	"github.com/omnsight/omndapi/src/relationship_service"
 	"github.com/omnsight/omndapi/src/utils"
 )
 
@@ -50,7 +52,7 @@ func main() {
 	}
 
 	// Register your business logic implementation with the gRPC server
-	entityService, err := NewEntityService(client)
+	entityService, err := entityservice.NewEntityService(client)
 	if err != nil {
 		logrus.WithFields(logrus.Fields{
 			"error": err,
@@ -58,7 +60,7 @@ func main() {
 	}
 	dapi.RegisterEntityServiceServer(gRPCServer, entityService)
 
-	relationService, err := NewRelationshipService(client)
+	relationService, err := relationshipservice.NewRelationshipService(client)
 	if err != nil {
 		logrus.WithFields(logrus.Fields{
 			"error": err,

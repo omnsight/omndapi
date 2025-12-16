@@ -3,10 +3,10 @@ package utils
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -80,18 +80,14 @@ func GetUser(ctx context.Context) (string, []string, error) {
 	userIDVal := ctx.Value(UserIDKey)
 	rolesVal := ctx.Value(UserRolesKey)
 
-	// 检查用户ID是否存在
 	userID, ok := userIDVal.(string)
 	if !ok || userID == "" {
-		logrus.Errorf("User ID not found in context %v", userID)
-		return "", nil, status.Error(codes.Unauthenticated, "Unauthorized")
+		return "", nil, fmt.Errorf("user ID not found in context %v", userID)
 	}
 
-	// 检查角色是否存在
 	roles, ok := rolesVal.([]string)
 	if !ok {
-		logrus.Errorf("User roles not found in context %v", roles)
-		return "", nil, status.Error(codes.Unauthenticated, "Unauthorized")
+		return "", nil, fmt.Errorf("user roles not found in context %v", roles)
 	}
 
 	return userID, roles, nil

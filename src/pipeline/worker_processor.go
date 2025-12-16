@@ -1,4 +1,4 @@
-package handlers
+package pipeline
 
 import (
 	"context"
@@ -6,6 +6,7 @@ import (
 
 	"github.com/omnsight/omndapi/src/utils"
 	"github.com/omnsight/omniscent-library/gen/model/v1"
+	"github.com/sirupsen/logrus"
 )
 
 type EntityResult struct {
@@ -18,7 +19,7 @@ type QueryResult struct {
 	Relations []model.Relation `json:"relations"`
 }
 
-func ProcessEntities(ctx context.Context, entities []EntityResult, relations []model.Relation, userId string, userRoles []string) ([]*model.Entity, []*model.Relation) {
+func (w *Worker) ProcessEntities(ctx context.Context, entities []EntityResult, relations []model.Relation) ([]*model.Entity, []*model.Relation) {
 	var pbEntities []*model.Entity
 	allowedIds := make(map[string]struct{})
 	logger := utils.GetLogger(ctx)
@@ -28,10 +29,10 @@ func ProcessEntities(ctx context.Context, entities []EntityResult, relations []m
 		case "event":
 			var event model.Event
 			if err := json.Unmarshal(er.Data, &event); err != nil {
-				logger.Errorf("failed to unmarshal entity data for type %s: %v", er.Type, err)
-				continue
-			}
-			if !utils.CheckReadPermission(&event, userId, userRoles) {
+				logger.WithFields(logrus.Fields{
+					"type":  er.Type,
+					"error": err,
+				}).Error("failed to unmarshal entity data")
 				continue
 			}
 			allowedIds[event.GetId()] = struct{}{}
@@ -40,10 +41,10 @@ func ProcessEntities(ctx context.Context, entities []EntityResult, relations []m
 		case "source":
 			var source model.Source
 			if err := json.Unmarshal(er.Data, &source); err != nil {
-				logger.Errorf("failed to unmarshal entity data for type %s: %v", er.Type, err)
-				continue
-			}
-			if !utils.CheckReadPermission(&source, userId, userRoles) {
+				logger.WithFields(logrus.Fields{
+					"type":  er.Type,
+					"error": err,
+				}).Error("failed to unmarshal entity data")
 				continue
 			}
 			allowedIds[source.GetId()] = struct{}{}
@@ -52,10 +53,10 @@ func ProcessEntities(ctx context.Context, entities []EntityResult, relations []m
 		case "website":
 			var website model.Website
 			if err := json.Unmarshal(er.Data, &website); err != nil {
-				logger.Errorf("failed to unmarshal entity data for type %s: %v", er.Type, err)
-				continue
-			}
-			if !utils.CheckReadPermission(&website, userId, userRoles) {
+				logger.WithFields(logrus.Fields{
+					"type":  er.Type,
+					"error": err,
+				}).Error("failed to unmarshal entity data")
 				continue
 			}
 			allowedIds[website.GetId()] = struct{}{}
@@ -64,10 +65,10 @@ func ProcessEntities(ctx context.Context, entities []EntityResult, relations []m
 		case "person":
 			var person model.Person
 			if err := json.Unmarshal(er.Data, &person); err != nil {
-				logger.Errorf("failed to unmarshal entity data for type %s: %v", er.Type, err)
-				continue
-			}
-			if !utils.CheckReadPermission(&person, userId, userRoles) {
+				logger.WithFields(logrus.Fields{
+					"type":  er.Type,
+					"error": err,
+				}).Error("failed to unmarshal entity data")
 				continue
 			}
 			allowedIds[person.GetId()] = struct{}{}
@@ -76,17 +77,17 @@ func ProcessEntities(ctx context.Context, entities []EntityResult, relations []m
 		case "organization":
 			var organization model.Organization
 			if err := json.Unmarshal(er.Data, &organization); err != nil {
-				logger.Errorf("failed to unmarshal entity data for type %s: %v", er.Type, err)
-				continue
-			}
-			if !utils.CheckReadPermission(&organization, userId, userRoles) {
+				logger.WithFields(logrus.Fields{
+					"type":  er.Type,
+					"error": err,
+				}).Error("failed to unmarshal entity data")
 				continue
 			}
 			allowedIds[organization.GetId()] = struct{}{}
 			pbEntities = append(pbEntities, &model.Entity{Entity: &model.Entity_Organization{Organization: &organization}})
 
 		default:
-			logger.Warnf("unknown entity type %s", er.Type)
+			logger.WithField("type", er.Type).Warn("unknown entity type")
 		}
 	}
 
