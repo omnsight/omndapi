@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -15,12 +16,17 @@ import (
 
 	gwRuntime "github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/omnsight/omndapi/gen/dapi/v1"
-	"github.com/omnsight/omndapi/src/entity_service"
-	"github.com/omnsight/omndapi/src/relationship_service"
+	entityservice "github.com/omnsight/omndapi/src/entity_service"
+	relationshipservice "github.com/omnsight/omndapi/src/relationship_service"
 	"github.com/omnsight/omndapi/src/utils"
 )
 
 func main() {
+	// Load .env file if it exists
+	if err := godotenv.Load(); err != nil {
+		logrus.Warn("No .env file found or failed to load, relying on environment variables")
+	}
+
 	// ---- 1. Start the gRPC Server (your logic) ----
 	// Get gRPC address from environment variable or use default
 	grpcPort := os.Getenv(utils.GrpcPort)

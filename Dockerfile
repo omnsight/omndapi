@@ -17,7 +17,7 @@ COPY gen/ ./gen/
 COPY src/ ./src/
 
 # Build the application
-RUN CGO_ENABLED=0 GOOS=linux go build -o /omndapi ./src
+RUN CGO_ENABLED=0 GOOS=linux go build -o /omndapi ./src/main.go
 
 # Runtime stage
 FROM alpine:3.20
