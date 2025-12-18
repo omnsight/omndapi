@@ -3,7 +3,6 @@
 
 # Ignore test data if any
 testdata/
-test/
 
 # Ignore documentation
 README.md

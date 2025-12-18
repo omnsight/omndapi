@@ -19,14 +19,8 @@ services:
     ports:
       - "8081:8080"
       - "9091:9090"
-    environment:
-      GRPC_PORT: 9090
-      SERVER_PORT: 8080
-      ARANGO_URL: http://arangodb:8529
-      ARANGO_DB: test_db
-      ARANGO_USERNAME: root
-      ARANGO_PASSWORD: "0123"
-      KEYCLOAK_CLIENT_ID: omndapi
+    env_file:
+      - .env.local
     depends_on:
       arangodb:
         condition: service_healthy

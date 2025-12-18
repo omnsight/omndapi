@@ -6,8 +6,10 @@ require (
 	github.com/arangodb/go-driver v1.6.9
 	github.com/google/uuid v1.6.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.27.3
+	github.com/joho/godotenv v1.5.1
 	github.com/omnsight/omniscent-library v1.11.9
 	github.com/samber/lo v1.52.0
+	github.com/sashabaranov/go-openai v1.41.2
 	github.com/sirupsen/logrus v1.9.3
 	google.golang.org/genproto/googleapis/api v0.0.0-20251213004720-97cd9d5aeac2
 	google.golang.org/grpc v1.77.0

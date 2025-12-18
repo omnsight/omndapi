@@ -46,7 +46,7 @@ func (s *EntityService) CreateEntity(ctx context.Context, req *dapi.CreateEntity
 		return nil, status.Errorf(codes.Internal, "failed to set permissions: %v", err)
 	}
 
-	dataMap, err := s.Pipeline.SetAdditionalFields(inputEntity)
+	dataMap, err := s.Pipeline.SetAdditionalFields(ctx, inputEntity)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to set additional fields: %v", err)
 	}
