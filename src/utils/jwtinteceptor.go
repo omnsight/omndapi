@@ -17,6 +17,7 @@ type ContextKey string
 
 const (
 	UserIDKey    ContextKey = "user_id"
+	UserNameKey  ContextKey = "user_name"
 	UserRolesKey ContextKey = "user_roles"
 )
 
@@ -52,7 +53,7 @@ func GrpcGatewayIdentityInterceptor(clientID string) grpc.UnaryServerInterceptor
 		}
 
 		// 3. Extract User ID
-		userID, _ := claims["sub"].(string)
+		userName, _ := claims["preferred_username"].(string)
 
 		// 4. Extract Roles for THIS specific Client
 		var roles []string
@@ -69,7 +70,7 @@ func GrpcGatewayIdentityInterceptor(clientID string) grpc.UnaryServerInterceptor
 		}
 
 		// 5. Inject into Context
-		ctx = context.WithValue(ctx, UserIDKey, userID)
+		ctx = context.WithValue(ctx, UserNameKey, userName)
 		ctx = context.WithValue(ctx, UserRolesKey, roles)
 
 		return handler(ctx, req)
@@ -77,12 +78,12 @@ func GrpcGatewayIdentityInterceptor(clientID string) grpc.UnaryServerInterceptor
 }
 
 func GetUser(ctx context.Context) (string, []string, error) {
-	userIDVal := ctx.Value(UserIDKey)
+	userNameVal := ctx.Value(UserNameKey)
 	rolesVal := ctx.Value(UserRolesKey)
 
-	userID, ok := userIDVal.(string)
-	if !ok || userID == "" {
-		return "", nil, fmt.Errorf("user ID not found in context %v", userID)
+	userName, ok := userNameVal.(string)
+	if !ok || userName == "" {
+		return "", nil, fmt.Errorf("user ID not found in context %v", userName)
 	}
 
 	roles, ok := rolesVal.([]string)
@@ -90,5 +91,5 @@ func GetUser(ctx context.Context) (string, []string, error) {
 		return "", nil, fmt.Errorf("user roles not found in context %v", roles)
 	}
 
-	return userID, roles, nil
+	return userName, roles, nil
 }

@@ -36,7 +36,7 @@ func getGRPCPort() string {
 func getMockToken() string {
 	header := map[string]string{"alg": "HS256", "typ": "JWT"}
 	payload := map[string]interface{}{
-		"sub": "admin",
+		"preferred_username": "admin",
 		"resource_access": map[string]interface{}{
 			clientID: map[string]interface{}{
 				"roles": []string{"admin"},
