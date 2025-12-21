@@ -34,10 +34,9 @@ go mod tidy
 ### Testing
 
 Run unit tests. You can view arangodb dashboard at http://localhost:8529 with username `root` and password `0123`.
-
 ```bash
-docker-compose up -d --wait
-go test -v ./...
+docker-compose up -d --wait --build
+go test -v -count=1 ./...
 docker-compose down
 
 docker logs

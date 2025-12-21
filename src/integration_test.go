@@ -92,7 +92,7 @@ func TestIntegration(t *testing.T) {
 	// Events
 	event1 := &model.Event{
 		Owner: "admin",
-		Read:  []string{},
+		Read:  []string{"admin"},
 		Write: []string{},
 		Title: "Rainbow Unicorn Supply Chain Magic Conference",
 		Type:  "Magic Conference",
@@ -133,7 +133,7 @@ func TestIntegration(t *testing.T) {
 
 	event2 := &model.Event{
 		Owner: "admin",
-		Read:  []string{},
+		Read:  []string{"admin"},
 		Write: []string{},
 		Title: "Interstellar Trade Expo",
 		Type:  "Expo",
@@ -171,7 +171,7 @@ func TestIntegration(t *testing.T) {
 
 	event3 := &model.Event{
 		Owner: "admin",
-		Read:  []string{},
+		Read:  []string{"admin"},
 		Write: []string{},
 		Title: "Deep Sea Rare Treasures Auction",
 		Type:  "Auction",
@@ -210,7 +210,7 @@ func TestIntegration(t *testing.T) {
 	// Persons
 	person1 := &model.Person{
 		Owner:       "admin",
-		Read:        []string{},
+		Read:        []string{"admin"},
 		Write:       []string{},
 		Name:        "Gandalf the White",
 		Role:        "Wizard",
@@ -239,7 +239,7 @@ func TestIntegration(t *testing.T) {
 
 	person2 := &model.Person{
 		Owner:       "admin",
-		Read:        []string{},
+		Read:        []string{"admin"},
 		Write:       []string{},
 		Name:        "Elon Musk",
 		Role:        "Entrepreneur",
@@ -268,7 +268,7 @@ func TestIntegration(t *testing.T) {
 
 	person3 := &model.Person{
 		Owner:       "admin",
-		Read:        []string{},
+		Read:        []string{"admin"},
 		Write:       []string{},
 		Name:        "Captain Nemo",
 		Role:        "Captain",
@@ -298,7 +298,7 @@ func TestIntegration(t *testing.T) {
 	// Organizations
 	org1 := &model.Organization{
 		Owner:        "admin",
-		Read:         []string{},
+		Read:         []string{"admin"},
 		Write:        []string{},
 		Name:         "Unicorn Supply Chain Co.",
 		Type:         "For-Profit Company",
@@ -325,7 +325,7 @@ func TestIntegration(t *testing.T) {
 
 	org2 := &model.Organization{
 		Owner:        "admin",
-		Read:         []string{},
+		Read:         []string{"admin"},
 		Write:        []string{},
 		Name:         "Interstellar Explorers",
 		Type:         "For-Profit Company",
@@ -352,7 +352,7 @@ func TestIntegration(t *testing.T) {
 
 	org3 := &model.Organization{
 		Owner:        "admin",
-		Read:         []string{},
+		Read:         []string{"admin"},
 		Write:        []string{},
 		Name:         "Deep Blue Conservation Society",
 		Type:         "Non-Profit Organization",
@@ -380,9 +380,9 @@ func TestIntegration(t *testing.T) {
 	// Websites
 	web1 := &model.Website{
 		Owner:        "admin",
-		Read:         []string{},
+		Read:         []string{"admin"},
 		Write:        []string{},
-		Url:          "https://www.magic-supply-chain.fantasy",
+		Url:          fmt.Sprintf("https://www.magic-supply-chain-%d.fantasy", time.Now().UnixNano()),
 		Title:        "Unicorn Supply Chain Official Website",
 		Description:  "The official website of Unicorn Supply Chain Company, covering everything from supply chain logistics to magic business.",
 		FoundedAt:    time.Now().Unix(),
@@ -408,9 +408,9 @@ func TestIntegration(t *testing.T) {
 
 	web2 := &model.Website{
 		Owner:        "admin",
-		Read:         []string{},
+		Read:         []string{"admin"},
 		Write:        []string{},
-		Url:          "https://www.mars-colonies.space",
+		Url:          fmt.Sprintf("https://www.mars-colonies-%d.space", time.Now().UnixNano()),
 		Title:        "Mars Colony Express",
 		Description:  "Latest news about Mars colony construction, life, and trade.",
 		FoundedAt:    time.Now().Unix(),
@@ -437,7 +437,7 @@ func TestIntegration(t *testing.T) {
 	// Sources
 	src1 := &model.Source{
 		Owner:       "admin",
-		Read:        []string{},
+		Read:        []string{"admin"},
 		Write:       []string{},
 		Name:        "The Daily Prophet",
 		Type:        "News",
@@ -469,7 +469,7 @@ func TestIntegration(t *testing.T) {
 
 	src2 := &model.Source{
 		Owner:       "admin",
-		Read:        []string{},
+		Read:        []string{"admin"},
 		Write:       []string{},
 		Name:        "Galactic Gazette",
 		Type:        "News",
@@ -501,7 +501,7 @@ func TestIntegration(t *testing.T) {
 
 	src3 := &model.Source{
 		Owner:       "admin",
-		Read:        []string{},
+		Read:        []string{"admin"},
 		Write:       []string{},
 		Name:        "Deep Sea Echo",
 		Type:        "News",
@@ -537,7 +537,7 @@ func TestIntegration(t *testing.T) {
 			From:  e1.GetEvent().GetId(),
 			To:    p1.GetPerson().GetId(),
 			Owner: "admin",
-			Read:  []string{},
+			Read:  []string{"admin"},
 			Write: []string{},
 			Name:  "participant",
 			Attributes: createAttributes(t, map[string]interface{}{
@@ -554,7 +554,7 @@ func TestIntegration(t *testing.T) {
 			From:  e1.GetEvent().GetId(),
 			To:    p2.GetPerson().GetId(),
 			Owner: "admin",
-			Read:  []string{},
+			Read:  []string{"admin"},
 			Write: []string{},
 			Name:  "hosted_by",
 			Attributes: createAttributes(t, map[string]interface{}{
@@ -571,7 +571,7 @@ func TestIntegration(t *testing.T) {
 			From:  e1.GetEvent().GetId(),
 			To:    o1.GetOrganization().GetId(),
 			Owner: "admin",
-			Read:  []string{},
+			Read:  []string{"admin"},
 			Write: []string{},
 			Name:  "organized_by",
 			Attributes: createAttributes(t, map[string]interface{}{
@@ -586,9 +586,26 @@ func TestIntegration(t *testing.T) {
 	_, err = relationClient.CreateRelationship(ctx, &dapi.CreateRelationshipRequest{
 		Relationship: &model.Relation{
 			From:  e1.GetEvent().GetId(),
+			To:    w1.GetWebsite().GetId(),
+			Owner: "admin",
+			Read:  []string{"admin"},
+			Write: []string{},
+			Name:  "mentioned_by",
+			Attributes: createAttributes(t, map[string]interface{}{
+				"zh": map[string]interface{}{"Name": "提及网站"},
+			}),
+		},
+	})
+	if err != nil {
+		t.Fatalf("Failed to create relationship e1->w1: %v", err)
+	}
+
+	_, err = relationClient.CreateRelationship(ctx, &dapi.CreateRelationshipRequest{
+		Relationship: &model.Relation{
+			From:  e1.GetEvent().GetId(),
 			To:    s1.GetSource().GetId(),
 			Owner: "admin",
-			Read:  []string{},
+			Read:  []string{"admin"},
 			Write: []string{},
 			Name:  "reported_by",
 			Attributes: createAttributes(t, map[string]interface{}{
@@ -605,7 +622,7 @@ func TestIntegration(t *testing.T) {
 			From:  e1.GetEvent().GetId(),
 			To:    s2.GetSource().GetId(),
 			Owner: "admin",
-			Read:  []string{},
+			Read:  []string{"admin"},
 			Write: []string{},
 			Name:  "sourced_from",
 			Attributes: createAttributes(t, map[string]interface{}{
@@ -622,7 +639,7 @@ func TestIntegration(t *testing.T) {
 			From:  e2.GetEvent().GetId(),
 			To:    p2.GetPerson().GetId(),
 			Owner: "admin",
-			Read:  []string{},
+			Read:  []string{"admin"},
 			Write: []string{},
 			Name:  "sponsor",
 			Attributes: createAttributes(t, map[string]interface{}{
@@ -639,7 +656,7 @@ func TestIntegration(t *testing.T) {
 			From:  e2.GetEvent().GetId(),
 			To:    o2.GetOrganization().GetId(),
 			Owner: "admin",
-			Read:  []string{},
+			Read:  []string{"admin"},
 			Write: []string{},
 			Name:  "sponsor",
 			Attributes: createAttributes(t, map[string]interface{}{
@@ -656,7 +673,7 @@ func TestIntegration(t *testing.T) {
 			From:  e2.GetEvent().GetId(),
 			To:    s2.GetSource().GetId(),
 			Owner: "admin",
-			Read:  []string{},
+			Read:  []string{"admin"},
 			Write: []string{},
 			Name:  "sourced_from",
 			Attributes: createAttributes(t, map[string]interface{}{
@@ -673,7 +690,7 @@ func TestIntegration(t *testing.T) {
 			From:  o1.GetOrganization().GetId(),
 			To:    w1.GetWebsite().GetId(),
 			Owner: "admin",
-			Read:  []string{},
+			Read:  []string{"admin"},
 			Write: []string{},
 			Name:  "has_website",
 			Attributes: createAttributes(t, map[string]interface{}{
@@ -685,12 +702,29 @@ func TestIntegration(t *testing.T) {
 		t.Fatalf("Failed to create relationship o1->w1: %v", err)
 	}
 
+	_, err = relationClient.CreateRelationship(ctx, &dapi.CreateRelationshipRequest{
+		Relationship: &model.Relation{
+			From:  e1.GetEvent().GetId(),
+			To:    e2.GetEvent().GetId(),
+			Owner: "admin",
+			Read:  []string{"admin"},
+			Write: []string{},
+			Name:  "related_event",
+			Attributes: createAttributes(t, map[string]interface{}{
+				"zh": map[string]interface{}{"Name": "相关事件"},
+			}),
+		},
+	})
+	if err != nil {
+		t.Fatalf("Failed to create relationship e1->e2: %v", err)
+	}
+
 	respRel, err := relationClient.CreateRelationship(ctx, &dapi.CreateRelationshipRequest{
 		Relationship: &model.Relation{
 			From:  e3.GetEvent().GetId(),
 			To:    p3.GetPerson().GetId(),
 			Owner: "admin",
-			Read:  []string{},
+			Read:  []string{"admin"},
 			Write: []string{},
 			Name:  "temp_relation",
 			Attributes: createAttributes(t, map[string]interface{}{
@@ -704,27 +738,26 @@ func TestIntegration(t *testing.T) {
 	tempRel := respRel.Relationship
 
 	// --- 4.5 List Entities from Event ---
-	now := time.Now().Unix()
-	yesterday := now - 86400
+	nowTime := time.Now()
+	startOfDay := time.Date(nowTime.Year(), nowTime.Month(), nowTime.Day(), 0, 0, 0, 0, nowTime.Location()).Unix()
+	endOfDay := time.Date(nowTime.Year(), nowTime.Month(), nowTime.Day(), 23, 59, 59, 0, nowTime.Location()).Unix()
 
 	// Test with startNode and time range
 	list1, err := entityClient.ListEntitiesFromEvent(ctx, &dapi.ListEntitiesFromEventRequest{
 		StartNode: e1.GetEvent().GetId(),
-		StartTime: yesterday,
-		EndTime:   now,
+		Depth:     1,
 	})
 	if err != nil {
 		t.Fatalf("Failed to list entities from event (1): %v", err)
 	}
+	t.Logf("ListEntitiesFromEvent 1: %d entities, %d relations", len(list1.Entities), len(list1.Relations))
 	if len(list1.Entities) == 0 {
-		t.Fatal("ListEntitiesFromEvent returned 0 entities")
+		t.Fatal("ListEntitiesFromEvent 1 returned 0 entities")
 	}
 
 	// Test with other query parameters
 	list2, err := entityClient.ListEntitiesFromEvent(ctx, &dapi.ListEntitiesFromEventRequest{
 		StartNode:   e1.GetEvent().GetId(),
-		StartTime:   yesterday,
-		EndTime:     now,
 		CountryCode: "FANTASY",
 		Tag:         "产业",
 		Depth:       1,
@@ -732,8 +765,22 @@ func TestIntegration(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to list entities from event (2): %v", err)
 	}
-	if len(list2.Entities) == 0 {
-		t.Fatal("ListEntitiesFromEvent (filtered) returned 0 entities")
+	t.Logf("ListEntitiesFromEvent 2: %d entities, %d relations", len(list2.Entities), len(list2.Relations))
+	if len(list2.Entities) == 0 || len(list2.Relations) == 0 {
+		t.Fatal("ListEntitiesFromEvent 2 (filtered) returned 0 entities or relations")
+	}
+
+	// Test with startNode and time range
+	list3, err := entityClient.ListEntitiesFromEvent(ctx, &dapi.ListEntitiesFromEventRequest{
+		StartTime: startOfDay,
+		EndTime:   endOfDay,
+	})
+	if err != nil {
+		t.Fatalf("Failed to list entities in time range: %v", err)
+	}
+	t.Logf("ListEntitiesFromEvent 3: %d entities, %d relations", len(list3.Entities), len(list3.Relations))
+	if len(list3.Entities) == 0 || len(list3.Relations) == 0 {
+		t.Fatal("ListEntitiesFromEvent 3 returned 0 entities or relations")
 	}
 
 	// --- 5. Delete One of Each ---
