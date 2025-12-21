@@ -42,5 +42,5 @@ docker-compose down
 
 docker logs
 
-docker system prune -a --volumes
+docker system prune -a
 ```

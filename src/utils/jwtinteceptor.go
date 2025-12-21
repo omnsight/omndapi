@@ -1,4 +1,3 @@
-// jwt_middleware.go
 package utils
 
 import (
@@ -52,24 +51,9 @@ func GrpcGatewayIdentityInterceptor(clientID string) grpc.UnaryServerInterceptor
 			return nil, status.Error(codes.Internal, "invalid claims structure")
 		}
 
-		// 3. Extract User ID
 		userName, _ := claims["preferred_username"].(string)
+		roles, _ := claims["roles"].([]string)
 
-		// 4. Extract Roles for THIS specific Client
-		var roles []string
-		if resAccess, ok := claims["resource_access"].(map[string]interface{}); ok {
-			if clientMap, ok := resAccess[clientID].(map[string]interface{}); ok {
-				if roleList, ok := clientMap["roles"].([]interface{}); ok {
-					for _, r := range roleList {
-						if rStr, ok := r.(string); ok {
-							roles = append(roles, rStr)
-						}
-					}
-				}
-			}
-		}
-
-		// 5. Inject into Context
 		ctx = context.WithValue(ctx, UserNameKey, userName)
 		ctx = context.WithValue(ctx, UserRolesKey, roles)
 

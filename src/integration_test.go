@@ -19,7 +19,6 @@ import (
 )
 
 const (
-	clientID    = "omndapi"
 	grpcHost    = "localhost"
 	grpcPortEnv = "SERVICE_GRPC_PORT"
 	defaultPort = "50051" // Default gRPC port, adjust if needed
@@ -37,12 +36,8 @@ func getMockToken() string {
 	header := map[string]string{"alg": "HS256", "typ": "JWT"}
 	payload := map[string]interface{}{
 		"preferred_username": "admin",
-		"resource_access": map[string]interface{}{
-			clientID: map[string]interface{}{
-				"roles": []string{"admin"},
-			},
-		},
-		"exp": time.Now().Add(time.Hour).Unix(),
+		"roles":              []string{"admin"},
+		"exp":                time.Now().Add(time.Hour).Unix(),
 	}
 
 	headerJSON, _ := json.Marshal(header)
