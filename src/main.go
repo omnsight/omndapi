@@ -79,8 +79,14 @@ func main() {
 
 	// Start the gRPC server in a separate goroutine
 	go func() {
-		lis, _ := net.Listen("tcp", ":"+grpcPort)
-		gRPCServer.Serve(lis)
+		lis, err := net.Listen("tcp", ":"+grpcPort)
+		if err != nil {
+			logrus.Fatalf("failed to listen on port %s: %v", grpcPort, err)
+		}
+		logrus.Infof("gRPC server listening on :%s", grpcPort)
+		if err := gRPCServer.Serve(lis); err != nil {
+			logrus.Fatalf("failed to serve gRPC: %v", err)
+		}
 	}()
 
 	// ---- 2. Start the gRPC-Gateway (the connection) ----
