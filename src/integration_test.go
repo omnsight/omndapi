@@ -21,7 +21,7 @@ import (
 const (
 	grpcHost    = "localhost"
 	grpcPortEnv = "SERVICE_GRPC_PORT"
-	defaultPort = "50051" // Default gRPC port, adjust if needed
+	defaultPort = "9091"
 )
 
 func getGRPCPort() string {
@@ -717,7 +717,7 @@ func TestIntegration(t *testing.T) {
 		t.Fatalf("Failed to list entities from event (1): %v", err)
 	}
 	if len(list1.Entities) == 0 {
-		t.Log("Warning: ListEntitiesFromEvent returned 0 entities")
+		t.Fatal("ListEntitiesFromEvent returned 0 entities")
 	}
 
 	// Test with other query parameters
@@ -733,7 +733,7 @@ func TestIntegration(t *testing.T) {
 		t.Fatalf("Failed to list entities from event (2): %v", err)
 	}
 	if len(list2.Entities) == 0 {
-		t.Log("Warning: ListEntitiesFromEvent (filtered) returned 0 entities")
+		t.Fatal("ListEntitiesFromEvent (filtered) returned 0 entities")
 	}
 
 	// --- 5. Delete One of Each ---

@@ -52,7 +52,18 @@ func GrpcGatewayIdentityInterceptor(clientID string) grpc.UnaryServerInterceptor
 		}
 
 		userName, _ := claims["preferred_username"].(string)
-		roles, _ := claims["roles"].([]string)
+		
+		var roles []string
+		if rolesInterface, ok := claims["roles"].([]interface{}); ok {
+			for _, r := range rolesInterface {
+				if rStr, ok := r.(string); ok {
+					roles = append(roles, rStr)
+				}
+			}
+		} else if rolesStr, ok := claims["roles"].([]string); ok {
+			// In case it somehow IS a []string (unlikely with jwt.MapClaims but possible if custom parser used)
+			roles = rolesStr
+		}
 
 		ctx = context.WithValue(ctx, UserNameKey, userName)
 		ctx = context.WithValue(ctx, UserRolesKey, roles)

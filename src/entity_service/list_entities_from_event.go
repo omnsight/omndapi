@@ -37,7 +37,14 @@ func (s *EntityService) ListEntitiesFromEvent(ctx context.Context, req *dapi.Lis
 		LET filtered_events = (
 			FOR e IN start_events
 			FILTER (@countryCode == "" OR e.location.countryCode == @countryCode OR e.location.country_code == @countryCode)
-			FILTER (@tag == "" OR @tag IN e.tags)
+			FILTER (@tag == "" 
+				OR @tag IN e.tags 
+				OR (IS_DOCUMENT(e.attributes) AND LENGTH(
+					FOR lang IN ATTRIBUTES(e.attributes)
+					FILTER IS_LIST(e.attributes[lang].Tags) AND @tag IN e.attributes[lang].Tags
+					RETURN 1
+				) > 0)
+			)
 			RETURN e
 		)
 
