@@ -179,7 +179,7 @@ func TestIntegration(t *testing.T) {
 		Owner:       "admin",
 		Read:        []string{"admin"},
 		Write:       []string{"admin"},
-		Name:        " Патрик Гандайл",
+		Name:        "甘道夫",
 		Role:        "巫师",
 		Nationality: "迈雅",
 		BirthDate:   time.Now().Unix(),
