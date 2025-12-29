@@ -734,6 +734,9 @@
           "type": "integer",
           "format": "int32"
         },
+        "label": {
+          "type": "string"
+        },
         "createdAt": {
           "type": "string",
           "format": "int64",
